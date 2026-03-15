@@ -17,6 +17,7 @@ import NotFound from './components/NotFound';
 import FAQ from './components/FAQ';
 import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
+import AdminPanel from './components/AdminPanel';
 import { fetchProducts, fetchProduct } from './lib/supabase';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
 
@@ -350,6 +351,7 @@ function App() {
         {currentPage === 'contact' && <Contact onNavigate={handleNavigate} />}
         {currentPage === 'about' && <About onNavigate={handleNavigate} />}
         {currentPage === 'faq' && <FAQ onNavigate={handleNavigate} />}
+        {currentPage === 'admin' && <AdminPanel />}
         {currentPage === 'privacy' && <Privacy onNavigate={handleNavigate} />}
         {currentPage === 'terms' && <Terms onNavigate={handleNavigate} />}
         {currentPage === 'shipping' && <Shipping onNavigate={handleNavigate} />}
