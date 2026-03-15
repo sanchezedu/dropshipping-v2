@@ -4,20 +4,78 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DropShop - Tienda Premium Ecuador | Los Mejores Productos</title>
-    <meta name="description" content="DropShop Ecuador - Tu tienda de confianza para compras en línea. Envío gratis a todo Ecuador. Los mejores productos con garantía." />
-    <meta name="keywords" content="dropshipping, ecuador, tienda online, productos electronicos, accesorios, tecnologia, compras online" />
+    
+    <!-- SEO Meta Tags -->
+    <title>DropShop - Tienda Online Ecuador | Los Mejores Productos</title>
+    <meta name="description" content="DropShop Ecuador - Tu tienda de confianza para compras online. Envío gratis a todo Ecuador. Los mejores productos de tecnología, accesorios, fitness y hogar con garantía." />
+    <meta name="keywords" content="dropshipping, ecuador, tienda online, productos electronicos, tecnologia, accesorios, compras online, envios ecuador" />
     <meta name="author" content="DropShop Ecuador" />
     <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://dropshipping-v2.vercel.app/" />
     
     <!-- Open Graph -->
-    <meta property="og:title" content="DropShop - Tienda Premium Ecuador" />
+    <meta property="og:title" content="DropShop - Tienda Online Ecuador" />
     <meta property="og:description" content="Los mejores productos con envío gratis a todo Ecuador" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_EC" />
+    <meta property="og:url" content="https://dropshipping-v2.vercel.app/" />
+    <meta property="og:site_name" content="DropShop Ecuador" />
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DropShop - Tienda Online Ecuador" />
+    <meta name="twitter:description" content="Los mejores productos con envío gratis a todo Ecuador" />
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DropShop Ecuador",
+      "url": "https://dropshipping-v2.vercel.app/",
+      "description": "Tienda online de confianza en Ecuador",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://dropshipping-v2.vercel.app/shop?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "DropShop Ecuador",
+      "url": "https://dropshipping-v2.vercel.app/",
+      "logo": "https://dropshipping-v2.vercel.app/favicon.svg",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+593-99-123-4567",
+        "contactType": "customer service",
+        "email": "info@dropshop.ec"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Guayaquil",
+        "addressCountry": "EC"
+      }
+    }
+    </script>
+    
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Cómo hago un pedido?", "acceptedAnswer": {"@type": "Answer", "text": "Busca el producto, agrégalo al carrito y completa el checkout."}},
+        {"@type": "Question", "name": "¿Cuánto tarda el envío?", "acceptedAnswer": {"@type": "Answer", "text": "3-7 días hábiles según tu ubicación."}},
+        {"@type": "Question", "name": "¿Aceptan devoluciones?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, 30 días para devoluciones en productos sin usar."}}
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
