@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://market01.supabase.co';
@@ -6,102 +5,79 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Fetch all products
+// Products
 export async function fetchProducts() {
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('id', { ascending: true });
-    
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return [];
-  }
+  const { data, error } = await supabase.from('products').select('*').order('id');
+  if (error) throw error;
+  return data || [];
 }
 
-// Fetch single product
 export async function fetchProduct(id) {
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return null;
-  }
+  const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data;
 }
 
-// Create order
-export async function createOrder(order) {
-  try {
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([order])
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error creating order:', error);
-    throw error;
-  }
+export async function updateProduct(id, updates) {
+  const { data, error } = await supabase.from('products').update(updates).eq('id', id).select();
+  if (error) throw error;
+  return data;
 }
 
-// Create order items
-export async function createOrderItems(items) {
-  try {
-    const { data, error } = await supabase
-      .from('order_items')
-      .insert(items)
-      .select();
-    
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error creating order items:', error);
-    throw error;
-  }
+export async function createProduct(product) {
+  const { data, error } = await supabase.from('products').insert([product]).select();
+  if (error) throw error;
+  return data[0];
 }
 
-// Get orders by email
-export async function getOrdersByEmail(email) {
-  try {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, order_items(*)')
-      .eq('email', email)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching orders:', error);
-    return [];
-  }
+export async function deleteProduct(id) {
+  const { error } = await supabase.from('products').delete().eq('id', id);
+  if (error) throw error;
 }
 
-// Get products by category
-export async function fetchProductsByCategory(category) {
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('category', category)
-      .order('id', { ascending: true });
-    
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching products by category:', error);
-    return [];
-  }
+// Orders
+export async function fetchAllOrders() {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*, order_items(*)')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function fetchOrder(id) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*, order_items(*)')
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateOrderStatus(id, status) {
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', id)
+    .select();
+  if (error) throw error;
+  return data;
+}
+
+// Stats
+export async function fetchStats() {
+  const { data: orders } = await supabase.from('orders').select('*');
+  const { data: products } = await supabase.from('products').select('id');
+  
+  const totalSales = orders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0;
+  const totalOrders = orders?.length || 0;
+  const pendingOrders = orders?.filter(o => o.status === 'pendiente').length || 0;
+  
+  return {
+    totalSales,
+    totalOrders,
+    totalProducts: products?.length || 0,
+    pendingOrders
+  };
 }
