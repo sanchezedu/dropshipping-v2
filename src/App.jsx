@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StoreProvider } from './context/StoreContext';
 import Header from './components/Header';
 import ProductCard from './components/ProductCard';
@@ -15,17 +15,95 @@ import Returns from './components/Returns';
 import Checkout from './components/Checkout';
 import NotFound from './components/NotFound';
 import { products, categories } from './data/products';
+import { X, Mail, Gift } from 'lucide-react';
+
+function NewsletterPopup({ onClose }) {
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email) {
+      setSubmitted(true);
+      localStorage.setItem('dropshop-newsletter', 'true');
+      setTimeout(onClose, 2000);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-bounce-in">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        
+        {submitted ? (
+          <div className="py-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Gift className="w-10 h-10 text-green-600" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">¡Gracias! 🎉</h3>
+            <p className="text-gray-600">Tu código de descuento: <span className="font-bold text-indigo-600">BIENVENIDO10</span></p>
+          </div>
+        ) : (
+          <>
+            <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Gift className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">¡Recibe 10% de descuento!</h3>
+            <p className="text-gray-600 mb-4">Suscríbete a nuestro newsletter y obtén un código de descuento para tu primera compra.</p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Tu correo electrónico"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all"
+              >
+                Obtener mi descuento
+              </button>
+            </form>
+            <p className="text-xs text-gray-500 mt-4">
+              No spam. Solo ofertas exclusivas.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCart, setShowCart] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [showNewsletter, setShowNewsletter] = useState(false);
   
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Show newsletter popup after 5 seconds (only once)
+  useEffect(() => {
+    const hasSeenNewsletter = localStorage.getItem('dropshop-newsletter');
+    if (!hasSeenNewsletter) {
+      const timer = setTimeout(() => {
+        setShowNewsletter(true);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleNavigate = (page, product = null) => {
     setCurrentPage(page);
@@ -399,6 +477,11 @@ function App() {
 
         {quickViewProduct && (
           <QuickView product={quickViewProduct} onClose={closeQuickView} />
+        )}
+
+        {/* Newsletter Popup */}
+        {showNewsletter && (
+          <NewsletterPopup onClose={() => setShowNewsletter(false)} />
         )}
       </div>
     </StoreProvider>

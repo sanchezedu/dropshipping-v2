@@ -5,6 +5,9 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
   const { addToCart, toggleWishlist, isInWishlist } = useStore();
   const inWishlist = isInWishlist(product.id);
   const discount = Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
+  
+  // Stock level indicator
+  const stockLevel = product.reviews > 1500 ? 'high' : product.reviews > 500 ? 'medium' : 'low';
 
   return (
     <div className="product-card group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden">
@@ -26,6 +29,15 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
           </span>
         )}
       </div>
+
+      {/* Stock indicator */}
+      {stockLevel === 'low' && (
+        <div className="absolute top-14 left-3 z-10">
+          <span className="bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+            ⚠️ Pocas unidades
+          </span>
+        </div>
+      )}
 
       {/* Wishlist Button */}
       <button
@@ -88,21 +100,24 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
           {product.name}
         </h3>
         
-        {/* Rating */}
-        <div className="flex items-center gap-1 mb-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${
-                  i < Math.floor(product.rating)
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300'
-                }`}
-              />
-            ))}
+        {/* Rating & Sales */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${
+                    i < Math.floor(product.rating)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-500">({product.reviews})</span>
           </div>
-          <span className="text-sm text-gray-500">({product.reviews})</span>
+          <span className="text-xs text-green-600 font-medium">✓ {product.reviews.toLocaleString()} ventas</span>
         </div>
 
         {/* Price */}
