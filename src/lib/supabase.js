@@ -65,6 +65,27 @@ export async function updateOrderStatus(id, status) {
   return data;
 }
 
+// Create order
+export async function createOrder(order) {
+  const { data, error } = await supabase
+    .from('orders')
+    .insert([order])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// Create order items
+export async function createOrderItems(items) {
+  const { data, error } = await supabase
+    .from('order_items')
+    .insert(items)
+    .select();
+  if (error) throw error;
+  return data;
+}
+
 // Stats
 export async function fetchStats() {
   const { data: orders } = await supabase.from('orders').select('*');
