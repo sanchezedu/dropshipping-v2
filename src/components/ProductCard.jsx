@@ -7,17 +7,21 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
   const discount = Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
 
   return (
-    <div className="product-card group relative">
-      {/* Badges */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+    <div className="product-card group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden">
+      {/* Badges - Improved Style */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-3">
         {discount > 0 && (
-          <span className="badge-discount">-{discount}%</span>
+          <span className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+            -{discount}%
+          </span>
         )}
         {product.tags?.includes('bestseller') && (
-          <span className="badge-bestseller">★ Bestseller</span>
+          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+            ⭐ Top
+          </span>
         )}
         {product.tags?.includes('nuevo') && (
-          <span className="absolute top-12 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+          <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
             Nuevo
           </span>
         )}
@@ -29,7 +33,7 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
           e.stopPropagation();
           toggleWishlist(product);
         }}
-        className="absolute top-3 right-3 z-10 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all hover:scale-110"
+        className="absolute top-3 right-3 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all hover:scale-110"
       >
         <Heart
           className={`w-5 h-5 transition-colors ${
@@ -38,7 +42,7 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
         />
       </button>
 
-      {/* Image */}
+      {/* Image with consistent styling */}
       <div 
         onClick={() => onNavigate('product', product)}
         className="relative aspect-square overflow-hidden cursor-pointer bg-gray-100"

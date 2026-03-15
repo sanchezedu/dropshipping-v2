@@ -62,78 +62,125 @@ function App() {
   // Render Home Page
   const renderHome = () => (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            DropShop Ecuador
-          </h1>
-          <p className="text-xl mb-8">
-            Los mejores productos con envío gratis a todo Ecuador
-          </p>
-          <button
-            onClick={() => handleNavigate('shop')}
-            className="bg-white text-indigo-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100"
-          >
-            Ver Productos
-          </button>
+      {/* Announcement Bar */}
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-2 px-4">
+        <p className="text-sm font-semibold">
+          🔥 ENVÍO GRÁTIS a todo Ecuador en pedidos mayores a $50 | 📦 Pago contra entrega disponible
+        </p>
+      </div>
+
+      {/* Hero with Image */}
+      <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600" 
+          alt="Tienda online Ecuador"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-4 w-full">
+            <div className="max-w-xl">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
+                Los Mejores Productos
+                <span className="block text-orange-400">Al Mejor Precio</span>
+              </h1>
+              <p className="text-xl text-white/90 mb-8">
+                Envío gratis a todo Ecuador. Calidad garantizada.
+              </p>
+              <button
+                onClick={() => handleNavigate('shop')}
+                className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-lg"
+              >
+                🛒 Ver Ofertas de Hoy
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Trust Signals */}
+      {/* Categories Section */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-center mb-8">Compra por Categoría</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {categories.filter(c => c.id !== 'all').map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }}
+                className="group p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">
+                    {cat.id === 'electronica' ? '📱' : cat.id === 'accesorios' ? '🎮' : cat.id === 'fitness' ? '💪' : '🏠'}
+                  </span>
+                </div>
+                <h3 className="font-bold text-gray-800 text-center">{cat.name}</h3>
+                <p className="text-sm text-gray-500 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Signals - Improved Contrast */}
       <section className="py-8 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">🔒</span>
               </div>
               <div>
-                <p className="font-bold text-sm">Pago Seguro</p>
-                <p className="text-xs text-gray-500">100% Seguro</p>
+                <p className="font-bold text-gray-900">Pago Seguro</p>
+                <p className="text-sm text-gray-600">100% Seguro</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">🚚</span>
               </div>
               <div>
-                <p className="font-bold text-sm">Envío Gratis</p>
-                <p className="text-xs text-gray-500">Pedidos +$50</p>
+                <p className="font-bold text-gray-900">Envío Gratis</p>
+                <p className="text-sm text-gray-600">Pedidos +$50</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">↩️</span>
               </div>
               <div>
-                <p className="font-bold text-sm">30 Días</p>
-                <p className="text-xs text-gray-500">Devolución</p>
+                <p className="font-bold text-gray-900">30 Días</p>
+                <p className="text-sm text-gray-600">Devolución</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-2xl">💬</span>
               </div>
               <div>
-                <p className="font-bold text-sm">Soporte 24/7</p>
-                <p className="text-xs text-gray-500">Atención inmediata</p>
+                <p className="font-bold text-gray-900">Soporte 24/7</p>
+                <p className="text-sm text-gray-600">Por WhatsApp</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Payment Methods */}
-      <section className="py-4 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm text-gray-500 mb-2">Métodos de pago aceptados</p>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <span className="bg-white px-3 py-1 rounded shadow text-sm font-bold">Visa</span>
-            <span className="bg-white px-3 py-1 rounded shadow text-sm font-bold">Mastercard</span>
-            <span className="bg-white px-3 py-1 rounded shadow text-sm font-bold">American Express</span>
-            <span className="bg-white px-3 py-1 rounded shadow text-sm font-bold">PayPal</span>
-            <span className="bg-white px-3 py-1 rounded shadow text-sm font-bold">Diners Club</span>
+      {/* Payment Methods - Improved */}
+      <section className="py-6 bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-gray-400 text-sm mb-2 md:mb-0">Métodos de pago aceptados:</p>
+            </div>
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              <span className="bg-gray-800 px-4 py-2 rounded-lg text-sm font-bold text-white border border-gray-700">Visa</span>
+              <span className="bg-gray-800 px-4 py-2 rounded-lg text-sm font-bold text-white border border-gray-700">Mastercard</span>
+              <span className="bg-gray-800 px-4 py-2 rounded-lg text-sm font-bold text-white border border-gray-700">American Express</span>
+              <span className="bg-gray-800 px-4 py-2 rounded-lg text-sm font-bold text-white border border-gray-700">🍊 PayPhone</span>
+              <span className="bg-gray-800 px-4 py-2 rounded-lg text-sm font-bold text-white border border-gray-700">🏦 Transferencia</span>
+              <span className="bg-green-600 px-4 py-2 rounded-lg text-sm font-bold text-white">💵 Contra Entrega</span>
+            </div>
           </div>
         </div>
       </section>
@@ -141,7 +188,7 @@ function App() {
       {/* Products */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Productos Destacados</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">🔥 Productos Destacados</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.slice(0, 8).map(product => (
               <ProductCard
@@ -155,24 +202,63 @@ function App() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Testimonials - Redesigned */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Reseñas de Clientes</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">Lo que dicen nuestros clientes</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { name: 'Carlos M.', text: 'Excelente servicio, me llegó muy rápido el pedido. Muy recomendado!', rating: 5 },
-              { name: 'María G.', text: 'Productos de excelente calidad. Ya hice mi tercera compra.', rating: 5 },
-              { name: 'Juan P.', text: 'El mejor dropshipping en Ecuador. Totalmente satisfecho.', rating: 5 },
+              { 
+                name: 'Andrea Paz', 
+                location: 'Quito', 
+                text: 'Me encantó la rapidez del envío. Llegó en 3 días a Quito. El producto es exactamente como en las fotos. ¡Totalmente recomendado!', 
+                rating: 5,
+                verified: true,
+                date: '2 semanas atrás',
+                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'
+              },
+              { 
+                name: 'Marco Delgado', 
+                location: 'Guayaquil', 
+                text: 'Segunda vez que compro y siempre todo excelente. El servicio al cliente es muy atento, me resolvieron una duda en minutos por WhatsApp.', 
+                rating: 5,
+                verified: true,
+                date: '1 mes atrás',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
+              },
+              { 
+                name: 'Sofia Mendoza', 
+                location: 'Cuenca', 
+                text: 'Me llegó el pedido muy bien empacado. El teclado gaming funciona perfecto. Precios muy competitivos comparados con otras tiendas.', 
+                rating: 4,
+                verified: true,
+                date: '3 semanas atrás',
+                avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100'
+              },
             ].map((testimonial, i) => (
-              <div key={i} className="bg-gray-50 p-6 rounded-2xl">
+              <div key={i} className="bg-gray-50 p-6 rounded-2xl relative">
+                {testimonial.verified && (
+                  <span className="absolute top-4 right-4 bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
+                    ✓ Compra Verificada
+                  </span>
+                )}
+                <div className="flex items-center gap-3 mb-4">
+                  <img 
+                    src={testimonial.avatar} 
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold">{testimonial.name}</p>
+                    <p className="text-xs text-gray-500">{testimonial.location} · {testimonial.date}</p>
+                  </div>
+                </div>
                 <div className="flex gap-1 mb-3">
-                  {[...Array(testimonial.rating)].map((_, j) => (
-                    <span key={j} className="text-yellow-400">⭐</span>
+                  {[...Array(5)].map((_, j) => (
+                    <span key={j} className={j < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}>⭐</span>
                   ))}
                 </div>
-                <p className="text-gray-600 mb-4">"{testimonial.text}"</p>
-                <p className="font-bold">{testimonial.name}</p>
+                <p className="text-gray-700">"{testimonial.text}"</p>
               </div>
             ))}
           </div>
@@ -217,6 +303,18 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/593991234567"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all transform hover:scale-110"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
     </div>
   );
 
