@@ -3,8 +3,7 @@ import { useEffect } from 'react';
 export default function Analytics() {
   useEffect(() => {
     // Google Analytics 4
-    // To use: Replace G-XXXXXXXXXX with your GA4 measurement ID
-    const GA_ID = 'G-XXXXXXXXXX'; // Replace with your GA4 ID
+    const GA_ID = 'G-EEM69X2GRB';
     
     // Load GA4 script
     const script = document.createElement('script');
@@ -39,7 +38,9 @@ export default function Analytics() {
 
     return () => {
       // Cleanup
-      document.head.removeChild(script);
+      try {
+        document.head.removeChild(script);
+      } catch (e) {}
     };
   }, []);
 
