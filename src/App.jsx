@@ -362,7 +362,7 @@ function App() {
     <StoreProvider>
       <div className="min-h-screen">
         <Toast />
-        <Header onNavigate={handleNavigate} currentPage={currentPage} />
+        <Header onNavigate={handleNavigate} currentPage={currentPage} showToast={showToast} />
         {currentPage === 'home' && renderHome()}
         {currentPage === 'shop' && renderShop()}
         {currentPage === 'wishlist' && <Wishlist onNavigate={handleNavigate} />}

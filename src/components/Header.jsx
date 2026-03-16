@@ -1,16 +1,37 @@
-import { useState } from 'react';
-import { ShoppingCart, Heart, Search, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Heart, Search, Menu, X, User, LogOut } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { products } from '../data/products';
+import { products as localProducts } from '../data/products';
+import { getCurrentUser, signOut } from '../lib/supabase';
+import AuthPanel from './AuthPanel';
 
-export default function Header({ onNavigate, currentPage }) {
+export default function Header({ onNavigate, currentPage, showToast }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showAuthDropdown, setShowAuthDropdown] = useState(false);
+  const [user, setUser] = useState(null);
   const { cart, wishlist, cartCount } = useStore();
 
-  const suggestions = products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  async function checkUser() {
+    const currentUser = await getCurrentUser();
+    setUser(currentUser);
+  }
+
+  async function handleLogout() {
+    await signOut();
+    setUser(null);
+    setShowAuthDropdown(false);
+    showToast('Sesión cerrada', 'success');
+  }
+
+  // Use local products as fallback for search
+  const suggestions = (localProducts || []).filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-lg">
@@ -83,6 +104,32 @@ export default function Header({ onNavigate, currentPage }) {
               <ShoppingCart className="w-5 h-5 text-gray-600" />
               {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>}
             </button>
+
+            {/* Auth Button / User Menu */}
+            <div className="relative">
+              {user ? (
+                <button onClick={() => setShowAuthDropdown(!showAuthDropdown)} className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-indigo-600" />
+                  </div>
+                </button>
+              ) : (
+                <button onClick={() => setShowAuthDropdown(!showAuthDropdown)} className="p-2 hover:bg-gray-100 rounded-full">
+                  <User className="w-5 h-5 text-gray-600" />
+                </button>
+              )}
+
+              {/* Auth Dropdown */}
+              {showAuthDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border z-50">
+                  <AuthPanel 
+                    onNavigate={(page) => { onNavigate(page); setShowAuthDropdown(false); }} 
+                    onClose={() => setShowAuthDropdown(false)}
+                    showToast={showToast}
+                  />
+                </div>
+              )}
+            </div>
 
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 hover:bg-gray-100 rounded-full">
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

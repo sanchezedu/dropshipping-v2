@@ -5,6 +5,47 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Auth functions
+export async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: 'https://dropshipping-v2.vercel.app/'
+    }
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function signIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+}
+
+export async function getCurrentUser() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) return null;
+  return user;
+}
+
+export async function resetPassword(email) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://dropshipping-v2.vercel.app/reset-password'
+  });
+  if (error) throw error;
+  return data;
+}
+
 // Products
 export async function fetchProducts() {
   const { data, error } = await supabase.from('products').select('*').order('id');
@@ -40,6 +81,16 @@ export async function fetchAllOrders() {
   const { data, error } = await supabase
     .from('orders')
     .select('*, order_items(*)')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function fetchUserOrders(userId) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*, order_items(*)')
+    .eq('customer_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data || [];

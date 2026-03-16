@@ -26,8 +26,8 @@
     <meta name="twitter:title" content="DropShop - Tienda Online Ecuador" />
     <meta name="twitter:description" content="Los mejores productos con envío gratis a todo Ecuador" />
     
-    <!-- Schema.org JSON-LD -->
-    <script type="application/ld+json">
+    <!-- Schema.org JSON-LD - WebSite -->
+    <script type="application/ld+json" id="schema-website">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
@@ -38,11 +38,15 @@
         "@type": "SearchAction",
         "target": "https://dropshipping-v2.vercel.app/shop?search={search_term_string}",
         "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DropShop Ecuador"
       }
     }
     </script>
     
-    <!-- Organization Schema -->
+    <!-- Schema.org JSON-LD - Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -50,30 +54,94 @@
       "name": "DropShop Ecuador",
       "url": "https://dropshipping-v2.vercel.app/",
       "logo": "https://dropshipping-v2.vercel.app/favicon.svg",
+      "description": "Tienda online de confianza en Ecuador",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+593-99-123-4567",
         "contactType": "customer service",
-        "email": "info@dropshop.ec"
+        "availableLanguage": "Spanish"
       },
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Guayaquil",
         "addressCountry": "EC"
-      }
+      },
+      "sameAs": []
     }
     </script>
     
-    <!-- FAQ Schema -->
+    <!-- Schema.org JSON-LD - FAQ -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {"@type": "Question", "name": "¿Cómo hago un pedido?", "acceptedAnswer": {"@type": "Answer", "text": "Busca el producto, agrégalo al carrito y completa el checkout."}},
-        {"@type": "Question", "name": "¿Cuánto tarda el envío?", "acceptedAnswer": {"@type": "Answer", "text": "3-7 días hábiles según tu ubicación."}},
-        {"@type": "Question", "name": "¿Aceptan devoluciones?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, 30 días para devoluciones en productos sin usar."}}
+        {
+          "@type": "Question",
+          "name": "¿Cómo hago un pedido?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Para hacer un pedido, simplemente navega por nuestra tienda, agrega los productos que deseas al carrito y completa el proceso de checkout con tus datos de envío."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto tarda el envío?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "El tiempo de entrega es de 3-7 días hábiles dependiendo de tu ubicación. Envío gratis en pedidos mayores a $50."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Aceptan devoluciones?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, aceptamos devoluciones dentro de los 30 días posteriores a la compra. El producto debe estar sin usar y en su empaque original."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué métodos de pago aceptan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Aceptamos transferencia bancaria, pago contra entrega, PayPhone y todas las tarjetas de crédito y débito."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Hacen envíos a todo Ecuador?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, hacemos envíos a todo Ecuador. El envío es gratis en pedidos mayores a $50."
+          }
+        }
       ]
+    }
+    </script>
+    
+    <!-- Schema.org JSON-LD - Store -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "DropShop Ecuador",
+      "image": "https://dropshipping-v2.vercel.app/favicon.svg",
+      "description": "Tienda online de confianza en Ecuador",
+      "url": "https://dropshipping-v2.vercel.app/",
+      "telephone": "+593-99-123-4567",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Guayaquil",
+        "addressCountry": "EC"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "00:00",
+        "closes": "23:59"
+      },
+      "priceRange": "$$"
     }
     </script>
   </head>

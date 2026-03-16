@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
@@ -20,6 +20,60 @@ export default function ProductDetail({ product, onNavigate }) {
   const description = product?.description || '';
   const name = product?.name || '';
   const category = product?.category || '';
+
+  // Dynamic Product Schema JSON-LD for SEO
+  useEffect(() => {
+    const productSchema = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": name,
+      "description": description,
+      "image": product?.image || 'https://dropshipping-v2.vercel.app/favicon.svg',
+      "sku": `PROD-${product?.id || '001'}`,
+      "brand": {
+        "@type": "Brand",
+        "name": "DropShop Ecuador"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `https://dropshipping-v2.vercel.app/product/${product?.id || '1'}`,
+        "priceCurrency": "USD",
+        "price": price.toFixed(2),
+        "priceValidUntil": "2026-12-31",
+        "availability": stockLevel === 'low' ? "https://schema.org/LowStock" : "https://schema.org/InStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "DropShop Ecuador"
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": rating.toString(),
+        "reviewCount": reviews.toString()
+      }
+    };
+
+    // Remove existing product schema if any
+    const existingScript = document.getElementById('schema-product');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Add new product schema
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'schema-product';
+    script.textContent = JSON.stringify(productSchema);
+    document.head.appendChild(script);
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById('schema-product');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [product, name, description, price, rating, reviews, stockLevel]);
 
   // Get related products from localStorage
   const recentlyViewed = JSON.parse(localStorage.getItem('dropshop-recent') || '[]');
