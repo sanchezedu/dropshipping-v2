@@ -19,6 +19,7 @@ import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
 import WhatsAppChat from './components/WhatsAppChat';
+import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
 import { products as localProducts } from './data/products';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
@@ -187,6 +188,17 @@ function App() {
       <button onClick={() => setShowCompare(true)} className="fixed top-20 right-0 z-40 bg-indigo-600 text-white px-3 py-2 rounded-l-lg shadow-lg flex items-center gap-2 hover:bg-indigo-700">
         <GitCompare className="w-4 h-4" /> <span className="text-sm">Comparar</span>
       </button>
+
+      {/* Flash Sale Banner with Countdown */}
+      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-6">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-white text-center md:text-left">
+            <h3 className="text-2xl font-bold">🔥 OFERTA FLASH</h3>
+            <p className="text-white/90">20% de descuento en electrónicos hasta:</p>
+          </div>
+          <CountdownTimer targetDate={new Date().getTime() + 3 * 24 * 60 * 60 * 1000} />
+        </div>
+      </section>
 
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4">
