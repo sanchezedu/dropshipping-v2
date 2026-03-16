@@ -21,8 +21,8 @@ export default function WhatsAppChat() {
 
   return (
     <>
-      {/* WhatsApp Button - Only show on desktop */}
-      <div className="fixed bottom-6 right-6 z-40 hidden md:block">
+      {/* WhatsApp Button - Show on all screens, above mobile nav */}
+      <div className="fixed bottom-20 md:bottom-6 right-6 z-40">
         {isOpen && (
           <div className="absolute bottom-16 right-0 w-72 bg-white rounded-2xl shadow-2xl border p-4 mb-2">
             <div className="flex items-center gap-3 mb-3 pb-3 border-b">

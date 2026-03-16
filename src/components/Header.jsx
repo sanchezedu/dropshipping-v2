@@ -152,13 +152,13 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
               </div>
             </div>
 
-            {/* Menu Items */}
+            {/* Menu Items - Icons only, no duplicate text */}
             {[
-              { id: 'home', label: '🏠 Inicio', icon: '🏠' },
-              { id: 'shop', label: '🛍️ Tienda', icon: '🛍️' },
-              { id: 'blog', label: '📰 Blog', icon: '📰' },
-              { id: 'wishlist', label: '❤️ Favoritos', count: wishlist.length, icon: '❤️' },
-              { id: 'cart', label: '🛒 Carrito', count: cartCount, icon: '🛒' },
+              { id: 'home', label: '🏠 Inicio' },
+              { id: 'shop', label: '🛍️ Tienda' },
+              { id: 'blog', label: '📰 Blog' },
+              { id: 'wishlist', label: '❤️ Favoritos', count: wishlist.length },
+              { id: 'cart', label: '🛒 Carrito', count: cartCount },
             ].map(item => (
               <button 
                 key={item.id} 
@@ -169,10 +169,7 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
                     : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                 }`}
               >
-                <span className="flex items-center gap-3">
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.label}</span>
-                </span>
+                <span>{item.label}</span>
                 {item.count > 0 && (
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
                     {item.count}
@@ -186,10 +183,7 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
               onClick={toggleDarkMode} 
               className="flex items-center justify-between w-full text-left p-4 rounded-xl text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800"
             >
-              <span className="flex items-center gap-3">
-                <span className="text-xl">{darkMode ? '☀️' : '🌙'}</span>
-                <span>{darkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
-              </span>
+              <span>{darkMode ? '☀️ Modo Claro' : '🌙 Modo Oscuro'}</span>
             </button>
           </nav>
         </div>
