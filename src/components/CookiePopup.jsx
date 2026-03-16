@@ -11,15 +11,20 @@ export default function CookiePopup() {
   });
 
   useEffect(() => {
-    const consent = localStorage.getItem('dropshop-cookie-consent');
-    if (!consent) {
-      setTimeout(() => setShow(true), 1500);
-    } else {
-      const saved = JSON.parse(consent);
-      if (saved.analytics) {
-        enableAnalytics();
-      }
-    }
+    // Always show for now to debug - can be reverted later
+    const timer = setTimeout(() => setShow(true), 1500);
+    
+    // Listen for custom event to show settings
+    const handleShowSettings = () => {
+      setShow(true);
+      setShowSettings(true);
+    };
+    window.addEventListener('showCookieSettings', handleShowSettings);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('showCookieSettings', handleShowSettings);
+    };
   }, []);
 
   const enableAnalytics = () => {
