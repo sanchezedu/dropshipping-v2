@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import ProductReviews from './ProductReviews';
 
 export default function ProductDetail({ product, onNavigate }) {
   const [quantity, setQuantity] = useState(1);
@@ -167,15 +168,16 @@ export default function ProductDetail({ product, onNavigate }) {
               {/* Tabs */}
               <div className="border-t pt-4 mt-4">
                 <div className="flex gap-4 border-b mb-4">
-                  {['description', 'features', 'shipping'].map(tab => (
+                  {['description', 'features', 'shipping', 'reviews'].map(tab => (
                     <button key={tab} onClick={() => setActiveTab(tab)} className={`pb-2 px-1 font-medium ${activeTab === tab ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500'}`}>
-                      {tab === 'description' ? 'Descripcion' : tab === 'features' ? 'Caracteristicas' : 'Envio'}
+                      {tab === 'description' ? 'Descripcion' : tab === 'features' ? 'Caracteristicas' : tab === 'shipping' ? 'Envio' : 'Reseñas'}
                     </button>
                   ))}
                 </div>
                 {activeTab === 'description' && <p className="text-gray-600">{description}</p>}
                 {activeTab === 'features' && <ul className="grid sm:grid-cols-2 gap-2">{features?.map((f, i) => <li key={i} className="flex items-center gap-2 text-gray-600"><span className="w-2 h-2 bg-indigo-600 rounded-full" />{f}</li>)}</ul>}
                 {activeTab === 'shipping' && <div className="text-gray-600"><p>Procesamiento: 1-2 dias habiles</p><p>Entrega: 3-7 dias habiles</p></div>}
+                {activeTab === 'reviews' && <ProductReviews productId={product?.id} productName={name} />}
               </div>
             </div>
           </div>
