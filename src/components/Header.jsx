@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Heart, Search, Menu, X, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Heart, Search, Menu, X, User, Sun, Moon } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { products as localProducts } from '../data/products';
 import { getCurrentUser, signOut } from '../lib/supabase';
@@ -14,10 +14,14 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showAuthDropdown, setShowAuthDropdown] = useState(false);
   const [user, setUser] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
   const { cart, wishlist, cartCount, showToast } = useStore();
 
   useEffect(() => {
     checkUser();
+    // Check dark mode
+    const isDark = localStorage.getItem('theme') === 'dark';
+    setDarkMode(isDark);
   }, []);
 
   async function checkUser() {
@@ -25,7 +29,6 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
     } catch (error) {
-      console.log('User not logged in');
       setUser(null);
     }
   }
@@ -37,116 +40,159 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
     showToast('Sesión cerrada', 'success');
   }
 
-  // Use local products as fallback for search
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', newMode);
+  };
+
   const suggestions = (localProducts || []).filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-900/50">
-      <div className="max-w-7xl mx-auto px-2 md:px-4">
-        <div className="flex items-center justify-between h-14 md:h-16">
+    <header className="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow-md dark:shadow-slate-900/50">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="flex items-center justify-between h-12 sm:h-14 md:h-16">
           {/* Logo */}
-          <button onClick={() => onNavigate('home')} className="flex items-center gap-2">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm md:text-xl">D</span>
+          <button onClick={() => onNavigate('home')} className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm sm:text-base md:text-xl">D</span>
             </div>
-            <div className="hidden sm:block">
-              <span className="text-lg md:text-xl font-bold text-gray-800 dark:text-white">DropShop</span>
-              <span className="hidden md:block text-xs text-gray-500 dark:text-slate-400">Tienda Online Ecuador</span>
+            <div className="hidden xs:block">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-white">DropShop</span>
             </div>
           </button>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Desktop Nav - Hidden on mobile */}
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {[
               { id: 'home', label: 'Inicio' },
               { id: 'shop', label: 'Tienda' },
               { id: 'blog', label: 'Blog' },
               { id: 'wishlist', label: 'Favoritos' },
             ].map(item => (
-              <button key={item.id} onClick={() => onNavigate(item.id)} className={`font-medium transition-colors ${currentPage === item.id ? 'text-indigo-600' : 'text-gray-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400'}`}>
+              <button key={item.id} onClick={() => onNavigate(item.id)} className={`font-medium text-sm transition-colors ${currentPage === item.id ? 'text-indigo-600' : 'text-gray-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400'}`}>
                 {item.label}
                 {item.id === 'wishlist' && wishlist.length > 0 && <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5">{wishlist.length}</span>}
               </button>
             ))}
           </nav>
 
-          {/* Right Side */}
-          <div className="flex items-center space-x-1 md:space-x-2">
-            {/* Search */}
+          {/* Right Side - Icons */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            {/* Search Toggle */}
+            <button 
+              onClick={() => setSearchOpen(!searchOpen)} 
+              className="p-2 sm:p-2.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full touch-manipulation"
+            >
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-slate-300" />
+            </button>
+
+            {/* Dark Mode Toggle - Desktop only */}
+            <button 
+              onClick={toggleDarkMode}
+              className="hidden sm:block p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full"
+            >
+              {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-600" />}
+            </button>
+
+            {/* Cart - Desktop only, shown in mobile nav */}
+            <button 
+              onClick={() => onNavigate('cart')} 
+              className="hidden lg:block p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full relative"
+            >
+              <ShoppingCart className="w-5 h-5 text-gray-600 dark:text-slate-300" />
+              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 bg-indigo-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{cartCount}</span>}
+            </button>
+
+            {/* User/Login */}
+            <button 
+              onClick={() => onAuthClick && onAuthClick()} 
+              className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors text-xs sm:text-sm font-medium touch-manipulation"
+            >
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline text-xs">Cuenta</span>
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full touch-manipulation"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar - Expandable */}
+        {searchOpen && (
+          <div className="pb-2 sm:pb-3">
             <div className="relative">
-              <div className="flex items-center">
-                <input
-                  type={searchOpen ? 'search' : 'hidden'}
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(e.target.value.length > 0); }}
-                  onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  placeholder="Buscar..."
-                  className="w-32 md:w-64 px-3 md:px-4 py-1.5 md:py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm md:text-base"
-                />
-                <button onClick={() => setSearchOpen(!searchOpen)} className="p-1.5 md:p-2 hover:bg-gray-100 rounded-full touch-manipulation">
-                  <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
-                </button>
-              </div>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(e.target.value.length > 0); }}
+                onFocus={() => setShowSuggestions(searchQuery.length > 0)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                placeholder="Buscar productos..."
+                autoFocus
+                className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm sm:text-base bg-gray-50 dark:bg-slate-700 dark:text-white"
+              />
+              <button 
+                onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full mt-1 md:mt-2 w-64 md:w-80 bg-white rounded-xl shadow-xl border z-50 overflow-hidden">
+                <div className="absolute top-full mt-1 w-full bg-white dark:bg-slate-800 rounded-xl shadow-lg border dark:border-slate-700 z-50 overflow-hidden">
                   {suggestions.map(product => (
-                    <button key={product.id} onClick={() => { onNavigate('product', product); setShowSuggestions(false); setSearchQuery(''); }} className="w-full flex items-center gap-2 md:gap-3 p-2 md:p-3 hover:bg-gray-50 text-left">
-                      <img src={product.image} alt={product.name} className="w-8 h-8 md:w-10 md:h-10 rounded object-cover" />
+                    <button 
+                      key={product.id} 
+                      onClick={() => { onNavigate('product', product); setShowSuggestions(false); setSearchQuery(''); setSearchOpen(false); }} 
+                      className="w-full flex items-center gap-3 p-2.5 hover:bg-gray-50 dark:hover:bg-slate-700 text-left"
+                    >
+                      <img src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs md:text-sm font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className="text-xs md:text-sm text-indigo-600 font-bold">${product.price.toFixed(2)}</p>
+                        <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{product.name}</p>
+                        <p className="text-sm text-indigo-600 font-bold">${product.price.toFixed(2)}</p>
                       </div>
                     </button>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Wishlist - Hide on mobile, use bottom nav */}
-            <button onClick={() => onNavigate('wishlist')} className="hidden md:block p-1.5 md:p-2 hover:bg-gray-100 rounded-full relative touch-manipulation">
-              <Heart className="w-5 h-5 text-gray-600" />
-              {wishlist.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{wishlist.length}</span>}
-            </button>
-
-            {/* Cart - Hide on mobile, use bottom nav */}
-            <button onClick={() => onNavigate('cart')} className="hidden md:block p-1.5 md:p-2 hover:bg-gray-100 rounded-full relative touch-manipulation">
-              <ShoppingCart className="w-5 h-5 text-gray-600" />
-              {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{cartCount}</span>}
-            </button>
-
-            <DarkModeToggle />
-
-            {/* Login Button - Text hidden on mobile */}
-            <button onClick={() => onAuthClick && onAuthClick()} className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors text-xs md:text-sm font-medium touch-manipulation">
-              <User className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="hidden sm:inline">Iniciar Sesión</span>
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-1.5 md:p-2 hover:bg-gray-100 rounded-full touch-manipulation">
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
-        </div>
+        )}
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <nav className="md:hidden py-3 border-t space-y-1">
+          <nav className="lg:hidden py-3 border-t dark:border-slate-700 space-y-1">
             {[
               { id: 'home', label: '🏠 Inicio' },
               { id: 'shop', label: '🛍️ Tienda' },
               { id: 'blog', label: '📰 Blog' },
-              { id: 'wishlist', label: '❤️ Favoritos' },
-              { id: 'cart', label: '🛒 Carrito' },
+              { id: 'wishlist', label: '❤️ Favoritos', count: wishlist.length },
+              { id: 'cart', label: '🛒 Carrito', count: cartCount },
             ].map(item => (
-              <button key={item.id} onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }} className={`block w-full text-left py-2.5 px-4 rounded-lg font-medium text-sm ${currentPage === item.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600' : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
-                {item.label}
+              <button 
+                key={item.id} 
+                onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }} 
+                className={`flex items-center justify-between w-full text-left py-2.5 px-4 rounded-lg font-medium text-sm ${currentPage === item.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600' : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'}`}
+              >
+                <span>{item.label}</span>
+                {item.count > 0 && (
+                  <span className="bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 text-xs px-2 py-0.5 rounded-full">{item.count}</span>
+                )}
               </button>
             ))}
-            <div className="pt-2 border-t">
-              <button onClick={() => { onNavigate('home'); setMobileMenuOpen(false); onAuthClick && onAuthClick(); }} className="block w-full text-left py-2.5 px-4 rounded-lg text-indigo-600 font-medium text-sm">
-                👤 Mi Cuenta
+            <div className="pt-2 border-t dark:border-slate-700 flex gap-2">
+              <button 
+                onClick={toggleDarkMode} 
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium text-sm"
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                <span>{darkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
               </button>
             </div>
           </nav>
