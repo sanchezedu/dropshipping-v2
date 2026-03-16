@@ -26,7 +26,7 @@ export default function MobileNav({ currentPage, onNavigate, cartCount, wishlist
               <div className="relative">
                 <Icon className="w-5 h-5" />
                 {item.count > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                     {item.count > 9 ? '9+' : item.count}
                   </span>
                 )}
