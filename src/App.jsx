@@ -22,6 +22,7 @@ import WhatsAppChat from './components/WhatsAppChat';
 import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
 import { products as localProducts } from './data/products';
+import { fetchProduct as fetchProductSupabase } from './lib/supabase';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
 
 function NewsletterPopup({ onClose }) {
@@ -78,11 +79,24 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load products (using local data for now)
+  // Load products - try Supabase first, fallback to local
   useEffect(() => {
-    // Just use local products directly
-    setProducts(localProducts);
-    setLoading(false);
+    async function loadProducts() {
+      setLoading(true);
+      try {
+        const data = await fetchProductsSupabase();
+        if (data && Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        } else {
+          setProducts(localProducts);
+        }
+      } catch (error) {
+        console.log('Using local products:', error.message);
+        setProducts(localProducts);
+      }
+      setLoading(false);
+    }
+    loadProducts();
   }, []);
 
   // Initialize dark mode
@@ -96,13 +110,27 @@ function App() {
 
   // Load single product when navigating to product page
   useEffect(() => {
-    if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
-      // Find product in local data
-      const localProduct = localProducts.find(p => p.id === selectedProduct);
-      if (localProduct) {
-        setSelectedProduct(localProduct);
+    async function loadProduct() {
+      if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
+        try {
+          const product = await fetchProductSupabase(selectedProduct);
+          if (product) {
+            setSelectedProduct(product);
+          } else {
+            const localProduct = localProducts.find(p => p.id === selectedProduct);
+            if (localProduct) {
+              setSelectedProduct(localProduct);
+            }
+          }
+        } catch (error) {
+          const localProduct = localProducts.find(p => p.id === selectedProduct);
+          if (localProduct) {
+            setSelectedProduct(localProduct);
+          }
+        }
       }
     }
+    loadProduct();
   }, [currentPage]);
 
   useEffect(() => {
