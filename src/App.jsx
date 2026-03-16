@@ -21,6 +21,8 @@ import AdminPanel from './components/AdminPanel';
 import WhatsAppChat from './components/WhatsAppChat';
 import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
+import Analytics from './components/Analytics';
+import CookiePopup from './components/CookiePopup';
 import { products as localProducts } from './data/products';
 import { fetchProducts, fetchProduct } from './lib/supabase';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
@@ -475,6 +477,8 @@ function App() {
         {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
         {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
         <WhatsAppChat />
+        <Analytics />
+        <CookiePopup />
         {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
         {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
         {showCompare && <CompareModal onClose={() => setShowCompare(false)} onNavigate={handleNavigate} />}
