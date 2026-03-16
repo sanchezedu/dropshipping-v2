@@ -229,6 +229,50 @@ function App() {
         </div>
       </section>
 
+      {/* New Arrivals */}
+      <section className="py-16 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold">Nuevos Productos</h2>
+              <p className="text-gray-500 mt-1">Los últimos productos agregados a nuestra tienda</p>
+            </div>
+            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-2 text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-4 h-4" /></button>
+          </div>
+          {products.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.filter(p => p.tags?.includes('nuevo')).slice(0, 4).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No hay productos nuevos</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Best Sellers */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold">Más Vendidos</h2>
+              <p className="text-gray-500 mt-1">Los productos más populares de nuestra tienda</p>
+            </div>
+            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-2 text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-4 h-4" /></button>
+          </div>
+          {products.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.filter(p => p.tags?.includes('bestseller')).slice(0, 4).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No hay productos disponibles</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {recentlyViewed.length > 0 && (
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4">
