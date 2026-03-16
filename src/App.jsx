@@ -22,7 +22,7 @@ import WhatsAppChat from './components/WhatsAppChat';
 import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
 import { products as localProducts } from './data/products';
-import { fetchProduct as fetchProductSupabase } from './lib/supabase';
+import { fetchProducts, fetchProduct } from './lib/supabase';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
 
 function NewsletterPopup({ onClose }) {
@@ -99,7 +99,7 @@ function App() {
     async function loadProducts() {
       setLoading(true);
       try {
-        const data = await fetchProductsSupabase();
+        const data = await fetchProducts();
         if (data && Array.isArray(data) && data.length > 0) {
           setProducts(data);
         } else {
@@ -128,7 +128,7 @@ function App() {
     async function loadProduct() {
       if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
         try {
-          const product = await fetchProductSupabase(selectedProduct);
+          const product = await fetchProduct(selectedProduct);
           if (product) {
             setSelectedProduct(product);
           } else {
