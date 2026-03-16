@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Package, DollarSign, ShoppingCart, Clock, Eye, Lock, X, LogOut, Plus, Pencil, Trash2, Search, Settings, Users, TrendingUp, ShoppingBag } from 'lucide-react';
+import { Package, DollarSign, ShoppingCart, Clock, Eye, Lock, X, LogOut, Plus, Pencil, Trash2, Search, Settings, Users, TrendingUp, ShoppingBag, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { products as localProducts } from '../data/products';
 
 const ADMIN_PASSWORD = 'DropShop2024!';
 
@@ -63,6 +64,37 @@ export default function AdminPanel({ onNavigate }) {
       });
     } catch (error) {
       console.error('Error loading data:', error);
+    }
+    setLoading(false);
+  }
+
+  // Import all local products to Supabase
+  async function importAllProducts() {
+    if (!confirm(`¿Importar ${localProducts.length} productos locales a Supabase? Esto agregará productos nuevos.`)) return;
+    
+    setLoading(true);
+    try {
+      for (const product of localProducts) {
+        const productData = {
+          name: product.name,
+          price: product.price,
+          old_price: product.oldPrice || product.price * 1.5,
+          image: product.image,
+          category: product.category,
+          description: product.description,
+          features: product.features || [],
+          rating: product.rating || 4.5,
+          reviews: product.reviews || 0,
+          stock: product.stock !== false,
+          tags: product.tags || []
+        };
+        await supabase.from('products').insert([productData]);
+      }
+      alert('¡Productos importados correctamente!');
+      loadAllData();
+    } catch (error) {
+      console.error('Error importing products:', error);
+      alert('Error al importar productos');
     }
     setLoading(false);
   }
@@ -266,6 +298,18 @@ export default function AdminPanel({ onNavigate }) {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Import Products Button */}
+            <div className="bg-white rounded-xl shadow p-4">
+              <button onClick={importAllProducts} disabled={loading}
+                className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-green-700 disabled:opacity-50">
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                Importar Productos Locales ({localProducts.length})
+              </button>
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                Agrega los 36 productos locales a la base de datos
+              </p>
             </div>
 
             {/* Recent Orders Preview */}
