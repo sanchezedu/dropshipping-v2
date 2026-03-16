@@ -57,7 +57,7 @@ export default function LiveChat() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-40 hidden md:block">
       {/* Chat Button */}
       {!isOpen && (
         <button
