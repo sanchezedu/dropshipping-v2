@@ -19,6 +19,7 @@ import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
 import { fetchProducts, fetchProduct } from './lib/supabase';
+import { products as localProducts } from './data/products';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
 
 function NewsletterPopup({ onClose }) {
@@ -75,12 +76,23 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch products from Supabase
+  // Fetch products from Supabase with local fallback
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
-      const data = await fetchProducts();
-      setProducts(data || []);
+      try {
+        const data = await fetchProducts();
+        if (data && data.length > 0) {
+          setProducts(data);
+        } else {
+          // Fallback to local products if Supabase is empty
+          setProducts(localProducts);
+        }
+      } catch (error) {
+        console.log('Using local products (Supabase unavailable):', error.message);
+        // Fallback to local products
+        setProducts(localProducts);
+      }
       setLoading(false);
     }
     loadProducts();
@@ -90,9 +102,17 @@ function App() {
   useEffect(() => {
     async function loadProduct() {
       if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
-        const product = await fetchProduct(selectedProduct);
-        if (product) {
-          setSelectedProduct(product);
+        try {
+          const product = await fetchProduct(selectedProduct);
+          if (product) {
+            setSelectedProduct(product);
+          }
+        } catch (error) {
+          // Fallback to local product
+          const localProduct = localProducts.find(p => p.id === selectedProduct);
+          if (localProduct) {
+            setSelectedProduct(localProduct);
+          }
         }
       }
     }
