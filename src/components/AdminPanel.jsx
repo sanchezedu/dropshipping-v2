@@ -68,33 +68,39 @@ export default function AdminPanel({ onNavigate }) {
     setLoading(false);
   }
 
-  // Import all local products to Supabase
+  // Replace all local products in Supabase
   async function importAllProducts() {
-    if (!confirm(`¿Importar ${localProducts.length} productos locales a Supabase? Esto agregará productos nuevos.`)) return;
+    if (!confirm(`¿Reemplazar todos los productos con los ${localProducts.length} productos locales? Esto borrará los productos actuales.`)) return;
     
     setLoading(true);
     try {
-      for (const product of localProducts) {
-        const productData = {
-          name: product.name,
-          price: product.price,
-          old_price: product.oldPrice || product.price * 1.5,
-          image: product.image,
-          category: product.category,
-          description: product.description,
-          features: product.features || [],
-          rating: product.rating || 4.5,
-          reviews: product.reviews || 0,
-          stock: product.stock !== false,
-          tags: product.tags || []
-        };
-        await supabase.from('products').insert([productData]);
-      }
+      // First delete all existing products
+      await supabase.from('products').delete().neq('id', 0);
+      
+      // Then insert all local products
+      const productsToInsert = localProducts.map(product => ({
+        name: product.name,
+        price: product.price,
+        old_price: product.oldPrice || product.price * 1.5,
+        image: product.image,
+        category: product.category,
+        description: product.description,
+        features: product.features || [],
+        rating: product.rating || 4.5,
+        reviews: product.reviews || 0,
+        stock: product.stock !== false,
+        tags: product.tags || []
+      }));
+      
+      const { error } = await supabase.from('products').insert(productsToInsert);
+      
+      if (error) throw error;
+      
       alert('¡Productos importados correctamente!');
       loadAllData();
     } catch (error) {
       console.error('Error importing products:', error);
-      alert('Error al importar productos');
+      alert('Error al importar productos: ' + error.message);
     }
     setLoading(false);
   }
