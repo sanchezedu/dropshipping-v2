@@ -84,6 +84,15 @@ function App() {
     setLoading(false);
   }, []);
 
+  // Initialize dark mode
+  useEffect(() => {
+    const isDark = localStorage.getItem('dropshop-dark-mode') === 'true' || 
+      (localStorage.getItem('dropshop-dark-mode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
   // Load single product when navigating to product page
   useEffect(() => {
     if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
