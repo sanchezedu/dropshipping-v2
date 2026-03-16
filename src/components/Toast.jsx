@@ -6,9 +6,9 @@ export default function Toast() {
   if (!toast) return null;
 
   const icons = {
-    success: <CheckCircle className="w-5 h-5 text-green-500" />,
-    error: <AlertCircle className="w-5 h-5 text-red-500" />,
-    info: <Info className="w-5 h-5 text-blue-500" />
+    success: <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />,
+    error: <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />,
+    info: <Info className="w-5 h-5 text-blue-500 flex-shrink-0" />
   };
 
   const colors = {
@@ -18,10 +18,10 @@ export default function Toast() {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 animate-slide-up">
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border-l-4 ${colors[toast.type || 'success']}`}>
+    <div className="fixed bottom-20 md:bottom-6 left-3 md:left-6 right-3 md:right-auto z-50 animate-slide-up">
+      <div className={`flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl shadow-xl border-l-4 ${colors[toast.type || 'success']}`}>
         {icons[toast.type || 'success']}
-        <p className="text-sm font-medium text-gray-800">{toast.message}</p>
+        <p className="text-xs md:text-sm font-medium text-gray-800 line-clamp-2">{toast.message}</p>
       </div>
     </div>
   );

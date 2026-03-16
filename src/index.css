@@ -137,24 +137,214 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Mobile optimizations */
-@media (max-width: 640px) {
-  /* Better touch targets */
+/* ============================================
+   MOBILE-FIRST RESPONSIVE STYLES
+   ============================================ */
+
+/* Base mobile styles (small phones) */
+@media (max-width: 639px) {
+  /* Container adjustments */
+  .container-mobile {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Typography - smaller on mobile */
+  h1 {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  p {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  /* Touch targets - minimum 44px */
   button, 
-  [role="button"] {
+  [role="button"],
+  a {
     min-height: 44px;
     min-width: 44px;
   }
   
-  /* Prevent horizontal scroll */
+  /* Remove horizontal overflow */
   body {
     overflow-x: hidden;
+    max-width: 100vw;
   }
   
-  /* Better spacing for mobile */
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
+  /* Mobile product grid - 2 columns max */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  /* Smaller product cards */
+  .product-card .p-4 {
+    padding: 0.5rem;
+  }
+  
+  .product-card h3 {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  
+  .product-card .text-xl {
+    font-size: 1rem;
+  }
+  
+  /* Smaller buttons */
+  .btn-mobile {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Mobile spacing */
+  .mobile-px {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .mobile-py {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  /* Mobile header */
+  .header-mobile h-16 {
+    height: 3.5rem;
+  }
+  
+  /* Mobile text sizes */
+  .text-mobile-xl {
+    font-size: 1.25rem;
+  }
+  
+  .text-mobile-lg {
+    font-size: 1rem;
+  }
+  
+  .text-mobile-md {
+    font-size: 0.875rem;
+  }
+  
+  .text-mobile-sm {
+    font-size: 0.75rem;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+/* Desktop - keep original sizes */
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Mobile navigation - larger touch targets */
+@media (max-width: 767px) {
+  .mobile-nav-item {
+    padding: 0.75rem;
+    min-width: 3.5rem;
+    min-height: 3.5rem;
+  }
+  
+  /* Full-width modals on mobile */
+  .modal-mobile {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  /* Cart items - stack vertically */
+  .cart-item-mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .cart-item-mobile .cart-item-image {
+    width: 100%;
+    height: 8rem;
+  }
+  
+  /* Input fields - full width on mobile */
+  .input-mobile {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+  
+  /* Hide non-essential elements on mobile */
+  .hide-mobile {
+    display: none;
+  }
+  
+  /* Mobile-specific button styles */
+  .btn-mobile-full {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Section padding */
+  .section-mobile {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  /* Hero section - smaller on mobile */
+  .hero-mobile {
+    height: 300px;
+  }
+  
+  .hero-mobile h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Improved touch interactions */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets for touch devices */
+  button, 
+  [role="button"],
+  a,
+  .clickable {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Better tap targets for form elements */
+  input, 
+  select, 
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+  
+  /* Show all buttons on mobile (no hover-only) */
+  .product-card .opacity-0 {
+    opacity: 1;
   }
 }
 
@@ -166,4 +356,29 @@
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Mobile carousel touch */
+.carousel-touch {
+  touch-action: pan-x pinch-zoom;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carousel-touch > * {
+  scroll-snap-align: start;
+}
+
+/* Mobile-friendly form inputs */
+@layer utilities {
+  .form-input-mobile {
+    @apply w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-white;
+  }
+  
+  @media (max-width: 639px) {
+    .form-input-mobile {
+      font-size: 16px; /* Prevents iOS auto-zoom */
+    }
+  }
 }

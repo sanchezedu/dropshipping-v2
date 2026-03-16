@@ -24,8 +24,11 @@ export default class ErrorBoundary extends React.Component {
               Algo salió mal
             </h1>
             <p className="text-gray-600 dark:text-slate-400 mb-4">
-              Estamos trabajando para solucionarlo. Intenta recargar la página.
+              {this.state.error?.message || 'Estamos trabajando para solucionarlo. Intenta recargar la página.'}
             </p>
+            <pre className="text-left text-xs bg-gray-100 dark:bg-slate-800 p-4 rounded overflow-auto max-w-md mb-4">
+              {this.state.error?.stack}
+            </pre>
             <button 
               onClick={() => window.location.reload()}
               className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700"

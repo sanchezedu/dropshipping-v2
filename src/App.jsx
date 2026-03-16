@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StoreProvider, useStore } from './context/StoreContext';
+import { useStore } from './context/StoreContext';
 import Header from './components/Header';
 import ProductCard from './components/ProductCard';
 import QuickView from './components/QuickView';
@@ -218,57 +218,57 @@ function AppContent() {
   // Loading state
   if (loading && currentPage === 'home') {
     return (
-      <StoreProvider>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
-            <p className="text-gray-600">Cargando productos...</p>
-          </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
+          <p className="text-gray-600">Cargando productos...</p>
         </div>
-      </StoreProvider>
+      </div>
     );
   }
 
   // Render Home
   const renderHome = () => (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
       <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-2 px-4">
-        <p className="text-sm font-semibold">ENVIO GRÁTIS a todo Ecuador en pedidos mayores a $50 | Pago contra entrega disponible</p>
+        <p className="text-xs md:text-sm font-semibold">ENVIO GRÁTIS a todo Ecuador en pedidos mayores a $50 | Pago contra entrega disponible</p>
       </div>
 
-      <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+      {/* Hero Section - Mobile Optimized */}
+      <section className="relative h-[320px] md:h-[500px] lg:h-[600px] overflow-hidden">
         <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600" alt="Tienda" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-4 w-full">
-            <div className="max-w-xl">
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">Los Mejores Productos<span className="block text-orange-400">Al Mejor Precio</span></h1>
-              <p className="text-xl text-white/90 mb-8">Envio gratis a todo Ecuador. Calidad garantizada.</p>
-              <button onClick={() => handleNavigate('shop')} className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-10 py-4 rounded-full font-bold">Ver Ofertas de Hoy</button>
+          <div className="max-w-7xl mx-auto px-3 md:px-4 w-full">
+            <div className="max-w-xs md:max-w-xl">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-white mb-2 md:mb-4 leading-tight">Los Mejores Productos<span className="block text-orange-400">Al Mejor Precio</span></h1>
+              <p className="text-base md:text-xl text-white/90 mb-4 md:mb-8">Envio gratis a todo Ecuador. Calidad garantizada.</p>
+              <button onClick={() => handleNavigate('shop')} className="bg-orange-500 hover:bg-orange-600 text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-full font-bold w-full md:w-auto">Ver Ofertas de Hoy</button>
             </div>
           </div>
         </div>
       </section>
 
-      <button onClick={() => setShowCompare(true)} className="fixed top-20 right-0 z-40 bg-indigo-600 text-white px-3 py-2 rounded-l-lg shadow-lg flex items-center gap-2 hover:bg-indigo-700">
+      {/* Compare Button - Hide on mobile, use mobile nav instead */}
+      <button onClick={() => setShowCompare(true)} className="hidden md:flex fixed top-20 right-0 z-40 bg-indigo-600 text-white px-3 py-2 rounded-l-lg shadow-lg items-center gap-2 hover:bg-indigo-700">
         <GitCompare className="w-4 h-4" /> <span className="text-sm">Comparar</span>
       </button>
 
       {/* Flash Sale Banner with Countdown */}
-      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-6">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-3 md:py-6">
+        <div className="max-w-7xl mx-auto px-3 md:px-4 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
           <div className="text-white text-center md:text-left">
-            <h3 className="text-2xl font-bold">🔥 OFERTA FLASH</h3>
-            <p className="text-white/90">20% de descuento en electrónicos hasta:</p>
+            <h3 className="text-lg md:text-2xl font-bold">🔥 OFERTA FLASH</h3>
+            <p className="text-xs md:text-white/90">20% de descuento en electrónicos hasta:</p>
           </div>
           <CountdownTimer targetDate={new Date().getTime() + 3 * 24 * 60 * 60 * 1000} />
         </div>
       </section>
 
-      <section className="py-12 bg-white dark:bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8 dark:text-white">Explora por Categoría</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section className="py-6 md:py-12 bg-white dark:bg-slate-800">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <h2 className="text-lg md:text-2xl font-bold text-center mb-4 md:mb-8 dark:text-white">Explora por Categoría</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {categories.filter(c => c.id !== 'all').map((cat) => {
               const colorClasses = {
                 blue: 'from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700',
@@ -283,12 +283,12 @@ function AppContent() {
                 purple: 'text-purple-600 dark:text-purple-400'
               };
               return (
-                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className={`group p-6 bg-gradient-to-br rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 border ${colorClasses[cat.color]}`}>
-                  <div className={`w-14 h-14 mx-auto mb-3 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm`}>
-                    <cat.icon className={`w-7 h-7 ${iconColorClasses[cat.color]}`} />
+                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className={`group p-3 md:p-6 bg-gradient-to-br rounded-xl md:rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 border ${colorClasses[cat.color]}`}>
+                  <div className={`w-10 h-10 md:w-14 md:h-14 mx-auto mb-2 md:mb-3 rounded-lg md:rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm`}>
+                    <cat.icon className={`w-5 h-5 md:w-7 md:h-7 ${iconColorClasses[cat.color]}`} />
                   </div>
-                  <h3 className="font-bold text-gray-800 dark:text-white text-center">{cat.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
+                  <h3 className="font-bold text-sm md:text-base text-gray-800 dark:text-white text-center">{cat.name}</h3>
+                  <p className="text-xs md:text-sm text-gray-500 dark:text-slate-400 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
                 </button>
               );
             })}
@@ -296,9 +296,9 @@ function AppContent() {
         </div>
       </section>
 
-      <section className="py-8 bg-white dark:bg-slate-800 border-b dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section className="py-4 md:py-8 bg-white dark:bg-slate-800 border-b dark:border-slate-700">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {[
               { icon: ShieldCheck, title: 'Pago Seguro', desc: '100% Seguro', color: 'green' },
               { icon: Truck, title: 'Envío Gratis', desc: 'Pedidos +$50', color: 'blue' },
@@ -329,18 +329,18 @@ function AppContent() {
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Productos Destacados</h2>
-            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-2 text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-4 h-4" /></button>
+      <section className="py-6 md:py-16">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <div className="flex items-center justify-between mb-4 md:mb-8">
+            <h2 className="text-lg md:text-3xl font-bold">Productos Destacados</h2>
+            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-1 md:gap-2 text-xs md:text-base text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-3 h-3 md:w-4 md:h-4" /></button>
           </div>
           {products.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
               {products.slice(0, 8).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
             </div>
           ) : (
-            <div className="text-center py-12">
+            <div className="text-center py-8 md:py-12">
               <p className="text-gray-500">No hay productos disponibles</p>
             </div>
           )}
@@ -348,21 +348,21 @@ function AppContent() {
       </section>
 
       {/* New Arrivals */}
-      <section className="py-16 bg-gradient-to-r from-indigo-50 to-purple-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+      <section className="py-6 md:py-16 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <div className="flex items-center justify-between mb-4 md:mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Nuevos Productos</h2>
-              <p className="text-gray-500 mt-1">Los últimos productos agregados a nuestra tienda</p>
+              <h2 className="text-lg md:text-3xl font-bold">Nuevos Productos</h2>
+              <p className="text-xs md:text-base text-gray-500 mt-1">Los últimos productos agregados a nuestra tienda</p>
             </div>
-            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-2 text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-4 h-4" /></button>
+            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-1 md:gap-2 text-xs md:text-base text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-3 h-3 md:w-4 md:h-4" /></button>
           </div>
           {products.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
               {products.filter(p => p.tags?.includes('nuevo')).slice(0, 4).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
             </div>
           ) : (
-            <div className="text-center py-12">
+            <div className="text-center py-8 md:py-12">
               <p className="text-gray-500">No hay productos nuevos</p>
             </div>
           )}
@@ -370,21 +370,21 @@ function AppContent() {
       </section>
 
       {/* Best Sellers */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+      <section className="py-6 md:py-16">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <div className="flex items-center justify-between mb-4 md:mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Más Vendidos</h2>
-              <p className="text-gray-500 mt-1">Los productos más populares de nuestra tienda</p>
+              <h2 className="text-lg md:text-3xl font-bold">Más Vendidos</h2>
+              <p className="text-xs md:text-base text-gray-500 mt-1">Los productos más populares de nuestra tienda</p>
             </div>
-            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-2 text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-4 h-4" /></button>
+            <button onClick={() => handleNavigate('shop')} className="flex items-center gap-1 md:gap-2 text-xs md:text-base text-indigo-600 font-medium hover:underline">Ver todos <ChevronRight className="w-3 h-3 md:w-4 md:h-4" /></button>
           </div>
           {products.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
               {products.filter(p => p.tags?.includes('bestseller')).slice(0, 4).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
             </div>
           ) : (
-            <div className="text-center py-12">
+            <div className="text-center py-8 md:py-12">
               <p className="text-gray-500">No hay productos disponibles</p>
             </div>
           )}
@@ -392,20 +392,20 @@ function AppContent() {
       </section>
 
       {recentlyViewed.length > 0 && (
-        <section className="py-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-6"><Info className="w-5 h-5 text-gray-400" /><h2 className="text-2xl font-bold">Vistos Recientemente</h2></div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="py-4 md:py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-3 md:px-4">
+            <div className="flex items-center gap-2 mb-3 md:mb-6"><Info className="w-4 h-4 md:w-5 md:h-5 text-gray-400" /><h2 className="text-base md:text-2xl font-bold">Vistos Recientemente</h2></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
               {recentlyViewed.slice(0, 4).map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
             </div>
           </div>
         </section>
       )}
 
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Lo que dicen nuestros clientes</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+      <section className="py-6 md:py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <h2 className="text-lg md:text-3xl font-bold text-center mb-4 md:mb-8">Lo que dicen nuestros clientes</h2>
+          <div className="grid md:grid-cols-3 gap-4 md:gap-8">
             {[
               { name: 'Andrea Paz', location: 'Quito', text: 'Me encanto la rapidez del envio. Llego en 3 dias.', rating: 5 },
               { name: 'Marco Delgado', location: 'Guayaquil', text: 'Segunda vez que compro y siempre todo excelente.', rating: 5 },
@@ -421,44 +421,44 @@ function AppContent() {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="text-xl font-bold mb-4">DropShop</h4>
+      <footer className="bg-gray-900 text-white py-8 md:py-12">
+        <div className="max-w-7xl mx-auto px-3 md:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="col-span-2 md:col-span-1">
+              <h4 className="text-lg md:text-xl font-bold mb-3 md:mb-4">DropShop</h4>
               <p className="text-gray-400 text-sm">Tu tienda de confianza.</p>
-              <div className="flex gap-3 mt-4">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600">f</a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600">i</a>
-                <a href="https://wa.me/593991234567" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-green-600">w</a>
+              <div className="flex gap-2 md:gap-3 mt-3 md:mt-4">
+                <a href="#" className="w-8 h-8 md:w-10 md:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 text-sm md:text-base">f</a>
+                <a href="#" className="w-8 h-8 md:w-10 md:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600 text-sm md:text-base">i</a>
+                <a href="https://wa.me/593991234567" className="w-8 h-8 md:w-10 md:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-green-600 text-sm md:text-base">w</a>
               </div>
             </div>
             <div>
-              <h4 className="font-bold mb-4">Informacion</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="font-bold mb-3 md:mb-4 text-sm md:text-base">Informacion</h4>
+              <ul className="space-y-1 md:space-y-2 text-xs md:text-sm text-gray-400">
                 <li><button onClick={() => handleNavigate('about')} className="hover:text-white">Nosotros</button></li>
                 <li><button onClick={() => handleNavigate('faq')} className="hover:text-white">FAQ</button></li>
                 <li><button onClick={() => handleNavigate('contact')} className="hover:text-white">Contacto</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="font-bold mb-3 md:mb-4 text-sm md:text-base">Legal</h4>
+              <ul className="space-y-1 md:space-y-2 text-xs md:text-sm text-gray-400">
                 <li><button onClick={() => handleNavigate('terms')} className="hover:text-white">Terminos</button></li>
                 <li><button onClick={() => handleNavigate('privacy')} className="hover:text-white">Privacidad</button></li>
                 <li><button onClick={() => handleNavigate('returns')} className="hover:text-white">Devoluciones</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4">Contacto</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="font-bold mb-3 md:mb-4 text-sm md:text-base">Contacto</h4>
+              <ul className="space-y-1 md:space-y-2 text-xs md:text-sm text-gray-400">
                 <li>Guayaquil, Ecuador</li>
                 <li>info@dropshop.ec</li>
                 <li>+593 99 123 4567</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">© 2026 DropShop Ecuador.</div>
+          <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-xs md:text-sm text-gray-500">© 2026 DropShop Ecuador.</div>
         </div>
       </footer>
 
@@ -469,26 +469,26 @@ function AppContent() {
   );
 
   const renderShop = () => (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">Tienda</h1>
-        <div className="flex flex-wrap gap-4 mb-8">
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Buscar..." className="px-4 py-2 border rounded-lg" />
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="px-4 py-2 border rounded-lg">
+    <div className="min-h-screen bg-gray-50 py-4 md:py-8 pb-24 md:pb-8">
+      <div className="max-w-7xl mx-auto px-3 md:px-4">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8">Tienda</h1>
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 mb-4 md:mb-8">
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Buscar..." className="flex-1 px-3 md:px-4 py-2 md:py-3 border rounded-lg text-base" />
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="px-3 md:px-4 py-2 md:py-3 border rounded-lg text-base">
             {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
           </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="px-4 py-2 border rounded-lg">
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="px-3 md:px-4 py-2 md:py-3 border rounded-lg text-base">
             <option value="default">Ordenar</option>
             <option value="price-low">Precio: Menor</option>
             <option value="price-high">Precio: Mayor</option>
             <option value="rating">Mejor Rating</option>
           </select>
         </div>
-        <p className="mb-4">{filteredProducts.length} productos</p>
+        <p className="mb-3 md:mb-4 text-sm md:text-base">{filteredProducts.length} productos</p>
         {loading ? (
-          <div className="flex items-center justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>
+          <div className="flex items-center justify-center py-8 md:py-12"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6">
             {filteredProducts.map(product => <ProductCard key={product.id} product={product} onQuickView={handleQuickView} onNavigate={handleNavigate} />)}
           </div>
         )}
@@ -497,40 +497,38 @@ function AppContent() {
   );
 
   return (
-    <StoreProvider>
-      <div className="min-h-screen">
-        <Toast />
-        <Header onNavigate={handleNavigate} currentPage={currentPage} onAuthClick={() => setShowAuthModal(true)} />
-        {currentPage === 'home' && renderHome()}
-        {currentPage === 'shop' && renderShop()}
-        {currentPage === 'wishlist' && <Wishlist onNavigate={handleNavigate} />}
-        {currentPage === 'cart' && <Cart onClose={() => setShowCart(false)} onNavigate={handleNavigate} />}
-        {currentPage === 'checkout' && <Checkout onNavigate={handleNavigate} />}
-        {currentPage === 'contact' && <Contact onNavigate={handleNavigate} />}
-        {currentPage === 'about' && <About onNavigate={handleNavigate} />}
-        {currentPage === 'faq' && <FAQ onNavigate={handleNavigate} />}
-        {currentPage === 'admin' && <AdminPanel />}
-        {currentPage === 'privacy' && <Privacy onNavigate={handleNavigate} />}
-        {currentPage === 'terms' && <Terms onNavigate={handleNavigate} />}
-        {currentPage === 'shipping' && <Shipping onNavigate={handleNavigate} />}
-        {currentPage === 'returns' && <Returns onNavigate={handleNavigate} />}
-        {currentPage === 'product' && <ProductDetail product={selectedProduct} onNavigate={handleNavigate} />}
-        {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
-        {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
-        {currentPage === 'user' && <UserAccount onNavigate={handleNavigate} onClose={() => {}} />}
-        {currentPage === 'blog' && <Blog onNavigate={handleNavigate} />}
-        <WhatsAppChat />
-        <LiveChat />
-        <Analytics />
-        <CookiePopup />
-        <MobileNav currentPage={currentPage} onNavigate={handleNavigate} cartCount={cartCount} wishlistCount={wishlist.length} />
-        {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
-        {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
-        {showCompare && <CompareModal onClose={() => setShowCompare(false)} onNavigate={handleNavigate} />}
-        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onLoginSuccess={(user) => console.log('Logged in:', user)} />}
-      </div>
-    </StoreProvider>
+    <div className="min-h-screen">
+      <Toast />
+      <Header onNavigate={handleNavigate} currentPage={currentPage} onAuthClick={() => setShowAuthModal(true)} />
+      {currentPage === 'home' && renderHome()}
+      {currentPage === 'shop' && renderShop()}
+      {currentPage === 'wishlist' && <Wishlist onNavigate={handleNavigate} />}
+      {currentPage === 'cart' && <Cart onClose={() => setShowCart(false)} onNavigate={handleNavigate} />}
+      {currentPage === 'checkout' && <Checkout onNavigate={handleNavigate} />}
+      {currentPage === 'contact' && <Contact onNavigate={handleNavigate} />}
+      {currentPage === 'about' && <About onNavigate={handleNavigate} />}
+      {currentPage === 'faq' && <FAQ onNavigate={handleNavigate} />}
+      {currentPage === 'admin' && <AdminPanel />}
+      {currentPage === 'privacy' && <Privacy onNavigate={handleNavigate} />}
+      {currentPage === 'terms' && <Terms onNavigate={handleNavigate} />}
+      {currentPage === 'shipping' && <Shipping onNavigate={handleNavigate} />}
+      {currentPage === 'returns' && <Returns onNavigate={handleNavigate} />}
+      {currentPage === 'product' && <ProductDetail product={selectedProduct} onNavigate={handleNavigate} />}
+      {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
+      {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
+      {currentPage === 'user' && <UserAccount onNavigate={handleNavigate} onClose={() => {}} />}
+      {currentPage === 'blog' && <Blog onNavigate={handleNavigate} />}
+      <WhatsAppChat />
+      <LiveChat />
+      <Analytics />
+      <CookiePopup />
+      <MobileNav currentPage={currentPage} onNavigate={handleNavigate} cartCount={cartCount} wishlistCount={wishlist.length} />
+      {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
+      {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
+      {showCompare && <CompareModal onClose={() => setShowCompare(false)} onNavigate={handleNavigate} />}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onLoginSuccess={(user) => console.log('Logged in:', user)} />}
+    </div>
   );
 }
 
-export default App;
+export default AppContent;
