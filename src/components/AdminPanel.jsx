@@ -1,16 +1,50 @@
 import { useState, useEffect } from 'react';
 import { fetchAllOrders, fetchStats, updateOrderStatus } from '../lib/supabase';
-import { Package, DollarSign, ShoppingCart, Clock, Check, X, Truck, Eye } from 'lucide-react';
+import { Package, DollarSign, ShoppingCart, Clock, Eye, Lock, X, LogOut } from 'lucide-react';
 
-export default function AdminPanel() {
+// Password simple para el admin (puede cambiarse)
+const ADMIN_PASSWORD = 'DropShop2024!';
+
+export default function AdminPanel({ onNavigate }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalProducts: 0, pendingOrders: 0 });
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // Verificar si ya está autenticado
   useEffect(() => {
-    loadData();
+    const auth = localStorage.getItem('dropshop-admin-auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
   }, []);
+
+  // Cargar datos solo si está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData();
+    }
+  }, [isAuthenticated]);
+
+  function handleLogin(e) {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      localStorage.setItem('dropshop-admin-auth', 'true');
+      setError('');
+    } else {
+      setError('Contraseña incorrecta');
+    }
+  }
+
+  function handleLogout() {
+    setIsAuthenticated(false);
+    localStorage.removeItem('dropshop-admin-auth');
+    if (onNavigate) onNavigate('home');
+  }
 
   async function loadData() {
     setLoading(true);
@@ -37,12 +71,55 @@ export default function AdminPanel() {
     cancelado: 'bg-red-100 text-red-800'
   };
 
+  // Pantalla de login
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-indigo-600" />
+            </div>
+            <h1 className="text-2xl font-bold">Panel de Admin</h1>
+            <p className="text-gray-500">Ingresa la contraseña para continuar</p>
+          </div>
+          
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Contraseña"
+                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            </div>
+            <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700">
+              Ingresar
+            </button>
+          </form>
+          
+          <div className="mt-6 text-center">
+            <button onClick={() => onNavigate('home')} className="text-indigo-600 hover:underline text-sm">
+              Volver a la tienda
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Panel de Administracion - DropShop</h1>
+          <button onClick={handleLogout} className="flex items-center gap-2 text-gray-600 hover:text-red-600">
+            <LogOut className="w-5 h-5" />
+            <span>Salir</span>
+          </button>
         </div>
       </header>
 
@@ -138,17 +215,10 @@ export default function AdminPanel() {
                         {new Date(order.created_at).toLocaleDateString('es-EC')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-3"
-                        >
+                        <button onClick={() => setSelectedOrder(order)} className="text-indigo-600 hover:text-indigo-900 mr-3">
                           <Eye className="w-5 h-5" />
                         </button>
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className="text-sm border rounded px-2 py-1"
-                        >
+                        <select value={order.status} onChange={(e) => handleStatusChange(order.id, e.target.value)} className="text-sm border rounded px-2 py-1">
                           <option value="pendiente">Pendiente</option>
                           <option value="confirmado">Confirmado</option>
                           <option value="enviado">Enviado</option>
@@ -194,12 +264,10 @@ export default function AdminPanel() {
                   <p>{selectedOrder.ciudad}, {selectedOrder.provincia}</p>
                 </div>
               </div>
-              
               <div>
                 <h3 className="font-medium text-gray-500 text-sm mb-2">Direccion</h3>
                 <p>{selectedOrder.direccion}</p>
               </div>
-
               <div>
                 <h3 className="font-medium text-gray-500 text-sm mb-2">Productos</h3>
                 <div className="space-y-2">
@@ -211,19 +279,11 @@ export default function AdminPanel() {
                   ))}
                 </div>
               </div>
-
               <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>${selectedOrder.subtotal?.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Envio:</span>
-                  <span>${selectedOrder.envio?.toFixed(2)}</span>
-                </div>
+                <div className="flex justify-between"><span>Subtotal:</span><span>${selectedOrder.subtotal?.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Envio:</span><span>${selectedOrder.envio?.toFixed(2)}</span></div>
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total:</span>
-                  <span>${selectedOrder.total?.toFixed(2)}</span>
+                  <span>Total:</span><span>${selectedOrder.total?.toFixed(2)}</span>
                 </div>
               </div>
             </div>
