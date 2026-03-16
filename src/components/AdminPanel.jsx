@@ -123,6 +123,18 @@ export default function AdminPanel({ onNavigate }) {
         </div>
       </header>
 
+      {/* Admin Menu */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex gap-4">
+          <button onClick={() => {}} className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium">
+            Pedidos
+          </button>
+          <button onClick={() => onNavigate('products')} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300">
+            Productos
+          </button>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
