@@ -2,39 +2,24 @@ import { useState, useEffect } from 'react';
 import { fetchAllOrders, fetchStats, updateOrderStatus } from '../lib/supabase';
 import { Package, DollarSign, ShoppingCart, Clock, Eye, Lock, X, LogOut } from 'lucide-react';
 
-// Password simple para el admin (puede cambiarse)
+// Password simple para el admin
 const ADMIN_PASSWORD = 'DropShop2024!';
 
 export default function AdminPanel({ onNavigate }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, totalProducts: 0, pendingOrders: 0 });
-  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-
-  // Verificar si ya está autenticado
-  useEffect(() => {
-    const auth = localStorage.getItem('dropshop-admin-auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  // Cargar datos solo si está autenticado
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadData();
-    }
-  }, [isAuthenticated]);
 
   function handleLogin(e) {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
-      localStorage.setItem('dropshop-admin-auth', 'true');
       setError('');
+      loadData();
     } else {
       setError('Contraseña incorrecta');
     }
@@ -42,7 +27,6 @@ export default function AdminPanel({ onNavigate }) {
 
   function handleLogout() {
     setIsAuthenticated(false);
-    localStorage.removeItem('dropshop-admin-auth');
     if (onNavigate) onNavigate('home');
   }
 
@@ -50,7 +34,7 @@ export default function AdminPanel({ onNavigate }) {
     setLoading(true);
     try {
       const [ordersData, statsData] = await Promise.all([fetchAllOrders(), fetchStats()]);
-      setOrders(ordersData);
+      setOrders(ordersData || []);
       setStats(statsData);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -71,7 +55,7 @@ export default function AdminPanel({ onNavigate }) {
     cancelado: 'bg-red-100 text-red-800'
   };
 
-  // Pantalla de login
+  // Show login form if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -276,10 +260,12 @@ export default function AdminPanel({ onNavigate }) {
                   <p>{selectedOrder.ciudad}, {selectedOrder.provincia}</p>
                 </div>
               </div>
+              
               <div>
                 <h3 className="font-medium text-gray-500 text-sm mb-2">Direccion</h3>
                 <p>{selectedOrder.direccion}</p>
               </div>
+
               <div>
                 <h3 className="font-medium text-gray-500 text-sm mb-2">Productos</h3>
                 <div className="space-y-2">
@@ -291,6 +277,7 @@ export default function AdminPanel({ onNavigate }) {
                   ))}
                 </div>
               </div>
+
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between"><span>Subtotal:</span><span>${selectedOrder.subtotal?.toFixed(2)}</span></div>
                 <div className="flex justify-between"><span>Envio:</span><span>${selectedOrder.envio?.toFixed(2)}</span></div>
