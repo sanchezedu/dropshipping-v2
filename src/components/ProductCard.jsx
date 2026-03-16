@@ -74,7 +74,7 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
         </div>
 
         {/* Add to cart - always visible on mobile */}
-        <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="w-full mt-2 md:mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs md:text-base py-2 md:py-2.5 rounded-lg font-medium md:opacity-0 md:group-hover:opacity-100 transition-all touch-manipulation">
+        <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="w-full mt-2 md:mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs md:text-sm py-2 md:py-2.5 rounded-lg font-medium opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all touch-manipulation">
           Agregar
         </button>
       </div>
