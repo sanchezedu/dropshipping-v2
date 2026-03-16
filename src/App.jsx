@@ -18,7 +18,6 @@ import FAQ from './components/FAQ';
 import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
-import ProductManager from './components/ProductManager';
 import WhatsAppChat from './components/WhatsAppChat';
 import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
@@ -475,7 +474,6 @@ function App() {
         {currentPage === 'product' && <ProductDetail product={selectedProduct} onNavigate={handleNavigate} />}
         {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
         {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
-        {currentPage === 'products' && <ProductManager onNavigate={handleNavigate} showToast={showToast} />}
         <WhatsAppChat />
         {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
         {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
