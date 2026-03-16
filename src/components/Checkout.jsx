@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { CreditCard, Lock, Check, Truck, Shield } from 'lucide-react';
 import { createOrder, createOrderItems, getCurrentUser } from '../lib/supabase';
+import PayPhonePayment from './PayPhonePayment';
 
 export default function Checkout({ onNavigate }) {
   const { cart, cartTotal, showToast } = useStore();
@@ -200,24 +201,20 @@ export default function Checkout({ onNavigate }) {
               {step === 3 && (
                 <>
                   <h2 className="text-xl font-bold mb-6">Metodo de Pago</h2>
-                  <div className="space-y-4 mb-6">
-                    <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="pago" value="transferencia" checked={formData.metodoPago === 'transferencia'} onChange={(e) => setFormData({...formData, metodoPago: e.target.value})} className="mr-3" />
-                      <CreditCard className="w-6 h-6 text-indigo-600 mr-3" />
-                      <div><p className="font-bold">Transferencia Bancaria</p><p className="text-sm text-gray-500">Te enviaremos los datos por email</p></div>
-                    </label>
-                    <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="pago" value="contra_entrega" checked={formData.metodoPago === 'contra_entrega'} onChange={(e) => setFormData({...formData, metodoPago: e.target.value})} className="mr-3" />
-                      <span className="font-bold mr-3">Contra Entrega</span>
-                      <div><p className="text-sm text-gray-500">Pagas cuando recibes</p></div>
-                    </label>
-                  </div>
                   
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center gap-2"><Lock className="w-5 h-5 text-green-600" /><span className="font-medium text-green-700">Pago 100% Seguro</span></div>
-                  </div>
+                  {/* PayPhone Payment Component */}
+                  <PayPhonePayment 
+                    total={total} 
+                    onSuccess={(paymentInfo) => {
+                      // Handle successful payment
+                      setFormData({...formData, metodoPago: paymentInfo.method});
+                    }}
+                    onError={(error) => {
+                      showToast('Error en el pago: ' + error.message, 'error');
+                    }}
+                  />
 
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 mt-6">
                     <button type="button" onClick={() => setStep(2)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold">Atras</button>
                     <button type="submit" disabled={loading} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 disabled:opacity-50">
                       {loading ? 'Procesando...' : 'Realizar Pedido'}
