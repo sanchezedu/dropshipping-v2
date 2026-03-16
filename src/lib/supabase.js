@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://ftsgaqdlnhgfsqjzvtiv.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2dhcWRsbmhnZnNxanp2dGl2Iiwicm9sZSI6ImFub24iLCJpbnNlcnZjb25zdW1lckNvZGUiOiJKUzBZT05ZdVR5TnhNZVItNDQ0bzZCQTRBZmpEZFciLCJpYXQiOjE3MDk0MTc0MDAsImV4cCI6MjAyNDk5MzQwMH0.N5s2zT7ZlZ8MZ9JW6lqj6YxNpZlZzQz1rYvE9y0z9k8';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2dhcWRsbmhnZnNxanp2dGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDY4NDIsImV4cCI6MjA4OTE4Mjg0Mn0.iIaXd01YLttwDUipiYAny7tXrgoluXPMjdUywSolcbc';
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
