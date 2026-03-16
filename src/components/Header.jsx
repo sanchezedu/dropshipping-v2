@@ -19,8 +19,13 @@ export default function Header({ onNavigate, currentPage, showToast }) {
   }, []);
 
   async function checkUser() {
-    const currentUser = await getCurrentUser();
-    setUser(currentUser);
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.log('User not logged in');
+      setUser(null);
+    }
   }
 
   async function handleLogout() {

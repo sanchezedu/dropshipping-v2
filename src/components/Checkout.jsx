@@ -26,14 +26,18 @@ export default function Checkout({ onNavigate }) {
   // Check if user is logged in
   useEffect(() => {
     async function checkUser() {
-      const currentUser = await getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-        // Pre-fill form with user data
-        setFormData(prev => ({
-          ...prev,
-          email: currentUser.email || prev.email
-        }));
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          // Pre-fill form with user data
+          setFormData(prev => ({
+            ...prev,
+            email: currentUser.email || prev.email
+          }));
+        }
+      } catch (error) {
+        console.log('User not logged in');
       }
     }
     checkUser();

@@ -15,8 +15,12 @@ export default function AuthPanel({ onNavigate, onClose, showToast }) {
   }, []);
 
   async function checkUser() {
-    const currentUser = await getCurrentUser();
-    setUser(currentUser);
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.log('Error checking user');
+    }
     setLoading(false);
   }
 
