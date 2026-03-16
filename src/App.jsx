@@ -84,15 +84,15 @@ function App() {
       setLoading(true);
       try {
         const data = await fetchProducts();
-        if (data && data.length > 0) {
+        // Check if data is valid (not null and has items)
+        if (data && Array.isArray(data) && data.length > 0) {
           setProducts(data);
         } else {
-          // Fallback to local products if Supabase is empty
+          // Fallback to local products if Supabase is empty or unavailable
           setProducts(localProducts);
         }
       } catch (error) {
-        console.log('Using local products (Supabase unavailable):', error.message);
-        // Fallback to local products
+        console.log('Using local products:', error.message);
         setProducts(localProducts);
       }
       setLoading(false);
