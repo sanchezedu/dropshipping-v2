@@ -20,7 +20,6 @@ import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
 import WhatsAppChat from './components/WhatsAppChat';
 import MyOrders from './components/MyOrders';
-import { fetchProducts, fetchProduct } from './lib/supabase';
 import { products as localProducts } from './data/products';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
 
@@ -78,47 +77,22 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch products from Supabase with local fallback
+  // Load products (using local data for now)
   useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
-      try {
-        const data = await fetchProducts();
-        // Check if data is valid (not null and has items)
-        if (data && Array.isArray(data) && data.length > 0) {
-          setProducts(data);
-        } else {
-          // Fallback to local products if Supabase is empty or unavailable
-          setProducts(localProducts);
-        }
-      } catch (error) {
-        console.log('Using local products:', error.message);
-        setProducts(localProducts);
-      }
-      setLoading(false);
-    }
-    loadProducts();
+    // Just use local products directly
+    setProducts(localProducts);
+    setLoading(false);
   }, []);
 
-  // Fetch single product when navigating to product page
+  // Load single product when navigating to product page
   useEffect(() => {
-    async function loadProduct() {
-      if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
-        try {
-          const product = await fetchProduct(selectedProduct);
-          if (product) {
-            setSelectedProduct(product);
-          }
-        } catch (error) {
-          // Fallback to local product
-          const localProduct = localProducts.find(p => p.id === selectedProduct);
-          if (localProduct) {
-            setSelectedProduct(localProduct);
-          }
-        }
+    if (currentPage === 'product' && selectedProduct && typeof selectedProduct === 'number') {
+      // Find product in local data
+      const localProduct = localProducts.find(p => p.id === selectedProduct);
+      if (localProduct) {
+        setSelectedProduct(localProduct);
       }
     }
-    loadProduct();
   }, [currentPage]);
 
   useEffect(() => {
@@ -364,7 +338,7 @@ function App() {
     <StoreProvider>
       <div className="min-h-screen">
         <Toast />
-        <Header onNavigate={handleNavigate} currentPage={currentPage} showToast={showToast} />
+        <Header onNavigate={handleNavigate} currentPage={currentPage} />
         {currentPage === 'home' && renderHome()}
         {currentPage === 'shop' && renderShop()}
         {currentPage === 'wishlist' && <Wishlist onNavigate={handleNavigate} />}

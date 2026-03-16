@@ -5,14 +5,14 @@ import { products as localProducts } from '../data/products';
 import { getCurrentUser, signOut } from '../lib/supabase';
 import AuthPanel from './AuthPanel';
 
-export default function Header({ onNavigate, currentPage, showToast }) {
+export default function Header({ onNavigate, currentPage }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showAuthDropdown, setShowAuthDropdown] = useState(false);
   const [user, setUser] = useState(null);
-  const { cart, wishlist, cartCount } = useStore();
+  const { cart, wishlist, cartCount, showToast } = useStore();
 
   useEffect(() => {
     checkUser();
