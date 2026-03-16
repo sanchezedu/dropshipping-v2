@@ -80,6 +80,21 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // URL-based routing - check path on mount
+  useEffect(() => {
+    const path = window.location.pathname.slice(1); // Remove leading slash
+    const validPages = ['shop', 'cart', 'wishlist', 'checkout', 'contact', 'about', 'faq', 'admin', 'privacy', 'terms', 'shipping', 'returns', 'account', 'products'];
+    if (validPages.includes(path)) {
+      setCurrentPage(path);
+    } else if (path.startsWith('product/')) {
+      const productId = parseInt(path.split('/')[1]);
+      if (!isNaN(productId)) {
+        setSelectedProduct(productId);
+        setCurrentPage('product');
+      }
+    }
+  }, []);
+
   // Load products - try Supabase first, fallback to local
   useEffect(() => {
     async function loadProducts() {
@@ -144,8 +159,19 @@ function App() {
 
   const handleNavigate = (page, product = null) => {
     setCurrentPage(page);
+    
+    // Update URL without reload
+    if (page === 'product' && product) {
+      const productId = typeof product === 'number' ? product : product.id;
+      window.history.pushState({}, '', `/product/${productId}`);
+    } else if (page === 'home') {
+      window.history.pushState({}, '', '/');
+    } else {
+      window.history.pushState({}, '', `/${page}`);
+    }
+    
     if (product) {
-      setSelectedProduct(product);
+      setSelectedProduct(typeof product === 'number' ? product : product.id);
       const recent = JSON.parse(localStorage.getItem('dropshop-recent') || '[]');
       const productToSave = typeof product === 'number' ? products.find(p => p.id === product) : product;
       if (productToSave) {
