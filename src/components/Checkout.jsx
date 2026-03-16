@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import { CreditCard, Lock, Check, Truck, Shield } from 'lucide-react';
-import { createOrder, createOrderItems } from '../lib/supabase';
+import { createOrder, createOrderItems, getCurrentUser } from '../lib/supabase';
 
 export default function Checkout({ onNavigate }) {
   const { cart, cartTotal, showToast } = useStore();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -21,6 +22,22 @@ export default function Checkout({ onNavigate }) {
   });
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+
+  // Check if user is logged in
+  useEffect(() => {
+    async function checkUser() {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        setUser(currentUser);
+        // Pre-fill form with user data
+        setFormData(prev => ({
+          ...prev,
+          email: currentUser.email || prev.email
+        }));
+      }
+    }
+    checkUser();
+  }, []);
 
   const shipping = cartTotal > 50 ? 0 : 5.99;
   const total = cartTotal + shipping;
@@ -44,7 +61,8 @@ export default function Checkout({ onNavigate }) {
         subtotal: cartTotal,
         envio: shipping,
         total: total,
-        status: 'pendiente'
+        status: 'pendiente',
+        customer_id: user?.id || null
       };
 
       const order = await createOrder(orderData);

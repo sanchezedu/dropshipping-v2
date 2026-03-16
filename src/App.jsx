@@ -18,6 +18,8 @@ import FAQ from './components/FAQ';
 import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
+import WhatsAppChat from './components/WhatsAppChat';
+import MyOrders from './components/MyOrders';
 import { fetchProducts, fetchProduct } from './lib/supabase';
 import { products as localProducts } from './data/products';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
@@ -378,6 +380,8 @@ function App() {
         {currentPage === 'returns' && <Returns onNavigate={handleNavigate} />}
         {currentPage === 'product' && <ProductDetail product={selectedProduct} onNavigate={handleNavigate} />}
         {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
+        {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
+        <WhatsAppChat />
         {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
         {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
         {showCompare && <CompareModal onClose={() => setShowCompare(false)} onNavigate={handleNavigate} />}
