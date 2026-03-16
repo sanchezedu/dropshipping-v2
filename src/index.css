@@ -3,8 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
   body {
-    @apply font-sans text-gray-800 bg-gray-50;
+    @apply font-sans text-gray-800 bg-gray-50 transition-colors duration-300;
+  }
+  
+  /* Dark mode - comfortable dark backgrounds */
+  .dark body {
+    @apply text-gray-100 bg-slate-900;
+  }
+  
+  /* Prevent white flash on page load */
+  html.dark {
+    background-color: #0f172a;
+  }
+  
+  html.dark body {
+    background-color: #0f172a;
   }
 }
 
@@ -17,6 +35,10 @@
     @apply bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2;
   }
   
+  .dark .product-card {
+    @apply bg-slate-800 shadow-slate-900/50;
+  }
+  
   .badge-discount {
     @apply absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold;
   }
@@ -26,6 +48,122 @@
   }
   
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-white;
   }
+  
+  .dark .input-field {
+    @apply bg-slate-800 border-slate-600 text-white placeholder-slate-400;
+  }
+  
+  /* Cards with proper dark mode */
+  .dark-card {
+    @apply bg-white dark:bg-slate-800 rounded-2xl shadow-md dark:shadow-slate-900/50;
+  }
+  
+  /* Text colors */
+  .dark-text {
+    @apply text-gray-800 dark:text-gray-100;
+  }
+  
+  .dark-text-muted {
+    @apply text-gray-600 dark:text-slate-400;
+  }
+  
+  /* Section backgrounds */
+  .dark-section {
+    @apply bg-gray-50 dark:bg-slate-900;
+  }
+  
+  .dark-section-alt {
+    @apply bg-white dark:bg-slate-800;
+  }
+  
+  /* Footer */
+  .dark-footer {
+    @apply bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700;
+  }
+}
+
+/* Dark mode global overrides */
+.dark {
+  color-scheme: dark;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  @apply bg-slate-800 border-slate-600 text-white;
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-200;
+}
+
+/* Fix for white backgrounds in dark mode */
+.dark .bg-white {
+  @apply bg-slate-800;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-slate-900;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-slate-800;
+}
+
+/* Banner backgrounds */
+.dark .bg-gradient-to-r {
+  filter: brightness(0.9);
+}
+
+/* Ensure images don't appear too bright in dark mode */
+.dark img {
+  opacity: 0.9;
+}
+
+/* Button text in dark mode */
+.dark button:not(.product-card button) {
+  @apply text-inherit;
+}
+
+/* Mobile safe area padding for notched phones */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Better touch targets */
+  button, 
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

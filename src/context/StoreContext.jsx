@@ -39,18 +39,18 @@ export function StoreProvider({ children }) {
 
   const addToCart = (product) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => item.id === product.id && JSON.stringify(item.selectedVariants) === JSON.stringify(product.selectedVariants));
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        return prev.map(item => item.id === product.id && JSON.stringify(item.selectedVariants) === JSON.stringify(product.selectedVariants) ? { ...item, quantity: item.quantity + (product.quantity || 1) } : item);
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: product.quantity || 1 }];
     });
-    showToast(`${product.name.substring(0, 30)}... agregado al carrito`);
+    showToast(`${product.name?.substring(0, 30) || 'Producto'}... agregado al carrito`);
   };
 
   const removeFromCart = (productId) => setCart(prev => prev.filter(item => item.id !== productId));
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (productId, quantity, variants = null) => {
     if (quantity < 1) { removeFromCart(productId); return; }
     setCart(prev => prev.map(item => item.id === productId ? { ...item, quantity } : item));
   };
@@ -80,7 +80,8 @@ export function StoreProvider({ children }) {
   const isInCompare = (productId) => compareList.some(item => item.id === productId);
   const clearCompare = () => setCompareList([]);
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Calculate total using finalPrice if available (for variants), otherwise use price
+  const cartTotal = cart.reduce((sum, item) => sum + (item.finalPrice || item.price || 0) * item.quantity, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (

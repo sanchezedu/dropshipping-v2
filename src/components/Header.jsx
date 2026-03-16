@@ -5,8 +5,9 @@ import { products as localProducts } from '../data/products';
 import { getCurrentUser, signOut } from '../lib/supabase';
 import AuthPanel from './AuthPanel';
 import DarkModeToggle from './DarkModeToggle';
+import LanguageToggle from './LanguageToggle';
 
-export default function Header({ onNavigate, currentPage }) {
+export default function Header({ onNavigate, currentPage, onAuthClick }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,7 +41,7 @@ export default function Header({ onNavigate, currentPage }) {
   const suggestions = (localProducts || []).filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-lg">
+    <header className="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-900/50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -49,8 +50,8 @@ export default function Header({ onNavigate, currentPage }) {
               <span className="text-white font-bold text-xl">D</span>
             </div>
             <div className="hidden sm:block">
-              <span className="text-xl font-bold text-gray-800">DropShop</span>
-              <span className="hidden md:block text-xs text-gray-500">Tienda Online Ecuador</span>
+              <span className="text-xl font-bold text-gray-800 dark:text-white">DropShop</span>
+              <span className="hidden md:block text-xs text-gray-500 dark:text-slate-400">Tienda Online Ecuador</span>
             </div>
           </button>
 
@@ -59,9 +60,10 @@ export default function Header({ onNavigate, currentPage }) {
             {[
               { id: 'home', label: 'Inicio' },
               { id: 'shop', label: 'Tienda' },
+              { id: 'blog', label: 'Blog' },
               { id: 'wishlist', label: 'Favoritos' },
             ].map(item => (
-              <button key={item.id} onClick={() => onNavigate(item.id)} className={`font-medium transition-colors ${currentPage === item.id ? 'text-indigo-600' : 'text-gray-600 hover:text-indigo-600'}`}>
+              <button key={item.id} onClick={() => onNavigate(item.id)} className={`font-medium transition-colors ${currentPage === item.id ? 'text-indigo-600' : 'text-gray-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400'}`}>
                 {item.label}
                 {item.id === 'wishlist' && wishlist.length > 0 && <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5">{wishlist.length}</span>}
               </button>
@@ -113,31 +115,11 @@ export default function Header({ onNavigate, currentPage }) {
 
             <DarkModeToggle />
 
-            {/* Auth Button / User Menu */}
-            <div className="relative">
-              {user ? (
-                <button onClick={() => setShowAuthDropdown(!showAuthDropdown)} className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-full">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-indigo-600" />
-                  </div>
-                </button>
-              ) : (
-                <button onClick={() => setShowAuthDropdown(!showAuthDropdown)} className="p-2 hover:bg-gray-100 rounded-full">
-                  <User className="w-5 h-5 text-gray-600" />
-                </button>
-              )}
-
-              {/* Auth Dropdown */}
-              {showAuthDropdown && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border z-50">
-                  <AuthPanel 
-                    onNavigate={(page) => { onNavigate(page); setShowAuthDropdown(false); }} 
-                    onClose={() => setShowAuthDropdown(false)}
-                    showToast={showToast}
-                  />
-                </div>
-              )}
-            </div>
+            {/* Login Button */}
+            <button onClick={() => onAuthClick && onAuthClick()} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors">
+              <User className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">Iniciar Sesión</span>
+            </button>
 
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 hover:bg-gray-100 rounded-full">
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -149,15 +131,21 @@ export default function Header({ onNavigate, currentPage }) {
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 border-t space-y-2">
             {[
-              { id: 'home', label: 'Inicio' },
-              { id: 'shop', label: 'Tienda' },
-              { id: 'wishlist', label: 'Favoritos' },
-              { id: 'cart', label: 'Carrito' },
+              { id: 'home', label: '🏠 Inicio' },
+              { id: 'shop', label: '🛍️ Tienda' },
+              { id: 'blog', label: '📰 Blog' },
+              { id: 'wishlist', label: '❤️ Favoritos' },
+              { id: 'cart', label: '🛒 Carrito' },
             ].map(item => (
-              <button key={item.id} onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }} className={`block w-full text-left py-2 px-4 rounded-lg ${currentPage === item.id ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}>
+              <button key={item.id} onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }} className={`block w-full text-left py-3 px-4 rounded-lg font-medium ${currentPage === item.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600' : 'text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'}`}>
                 {item.label}
               </button>
             ))}
+            <div className="pt-2 border-t">
+              <button onClick={() => { onNavigate('home'); setMobileMenuOpen(false); onAuthClick && onAuthClick(); }} className="block w-full text-left py-3 px-4 rounded-lg text-indigo-600 font-medium">
+                👤 Mi Cuenta
+              </button>
+            </div>
           </nav>
         )}
       </div>

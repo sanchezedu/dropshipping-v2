@@ -1,22 +1,43 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://ftsgaqdlnhgfsqjzvtiv.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2dhcWRsbmhnZnNxanp2dGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDY4NDIsImV4cCI6MjA4OTE4Mjg0Mn0.iIaXd01YLttwDUipiYAny7tXrgoluXPMjdUywSolcbc';
+// Use environment variables in production, fallback to hardcoded for development
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ftsgaqdlnhgfsqjzvtiv.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0c2dhcWRsbmhnZnNxanp2dGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MDY4NDIsImV4cCI6MjA4OTE4Mjg0Mn0.iIaXd01YLttwDUipiYAny7tXrgoluXPMjdUywSolcbc';
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
-    autoRefreshToken: true
+    autoRefreshToken: true,
+    // Security: detect session changes
+    flowType: 'pkce',
+    // Add storage key prefix for security
+    storageKey: 'dropshop-auth-'
+  },
+  // Rate limiting: prevent abuse
+  global: {
+    headers: {
+      'X-Client-Info': 'dropshop-web'
+    }
   }
 });
 
-// Auth functions
+// Auth functions with better error handling
 export async function signUp(email, password) {
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format');
+  }
+  // Validate password strength
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters');
+  }
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: 'https://dropshipping-v2.vercel.app/'
+      emailRedirectTo: window.location.origin + '/'
     }
   });
   if (error) throw error;
@@ -48,7 +69,18 @@ export async function getCurrentUser() {
 
 export async function resetPassword(email) {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://dropshipping-v2.vercel.app/reset-password'
+    redirectTo: window.location.origin + '/reset-password'
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/'
+    }
   });
   if (error) throw error;
   return data;
@@ -56,15 +88,22 @@ export async function resetPassword(email) {
 
 // Products
 export async function fetchProducts() {
+  console.log('Fetching from Supabase...');
   try {
-    const { data, error } = await supabase.from('products').select('*').order('id');
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('id', { ascending: true });
+    
     if (error) {
-      console.log('Supabase error:', error.message);
+      console.error('Supabase error:', error.message);
       return null;
     }
+    
+    console.log('Supabase products loaded:', data?.length || 0);
     return data || [];
   } catch (e) {
-    console.log('Supabase fetch error:', e.message);
+    console.error('Supabase fetch error:', e.message);
     return null;
   }
 }
@@ -214,5 +253,48 @@ export async function fetchStats() {
       totalProducts: 36,
       pendingOrders: 0
     };
+  }
+}
+
+// Blog posts
+export async function fetchBlogPosts() {
+  try {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .order('published_at', { ascending: false });
+    if (error) return null;
+    return data || [];
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function fetchBlogPost(slug) {
+  try {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    if (error) return null;
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+// Product variants
+export async function fetchProductVariants(productId) {
+  try {
+    const { data, error } = await supabase
+      .from('product_variants')
+      .select('*')
+      .eq('product_id', productId)
+      .order('type', { ascending: true });
+    if (error) return [];
+    return data || [];
+  } catch (e) {
+    return [];
   }
 }

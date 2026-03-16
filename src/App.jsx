@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StoreProvider } from './context/StoreContext';
+import { StoreProvider, useStore } from './context/StoreContext';
 import Header from './components/Header';
 import ProductCard from './components/ProductCard';
 import QuickView from './components/QuickView';
@@ -19,13 +19,18 @@ import CompareModal from './components/CompareModal';
 import Toast from './components/Toast';
 import AdminPanel from './components/AdminPanel';
 import WhatsAppChat from './components/WhatsAppChat';
+import LiveChat from './components/LiveChat';
 import CountdownTimer from './components/CountdownTimer';
 import MyOrders from './components/MyOrders';
 import Analytics from './components/Analytics';
 import CookiePopup from './components/CookiePopup';
+import UserAccount from './components/UserAccount';
+import Blog from './components/Blog';
+import AuthModal from './components/AuthModal';
+import MobileNav from './components/MobileNav';
 import { products as localProducts } from './data/products';
 import { fetchProducts, fetchProduct } from './lib/supabase';
-import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2 } from 'lucide-react';
+import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2, ShieldCheck, Truck, RotateCcw, Headphones, Smartphone, Wrench, Dumbbell, Home } from 'lucide-react';
 
 function NewsletterPopup({ onClose }) {
   const [email, setEmail] = useState('');
@@ -68,11 +73,13 @@ function NewsletterPopup({ onClose }) {
   );
 }
 
-function App() {
+function AppContent() {
+  const { cart, cartCount, wishlist } = useStore();
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showCart, setShowCart] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showNewsletter, setShowNewsletter] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -96,7 +103,7 @@ function App() {
     }
   }, []);
 
-  // Load products - try Supabase first, fallback to local
+  // Load products from Supabase
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
@@ -105,10 +112,11 @@ function App() {
         if (data && Array.isArray(data) && data.length > 0) {
           setProducts(data);
         } else {
+          console.log('No products from Supabase, using local fallback');
           setProducts(localProducts);
         }
       } catch (error) {
-        console.log('Using local products:', error.message);
+        console.log('Supabase error, using local products:', error.message);
         setProducts(localProducts);
       }
       setLoading(false);
@@ -118,9 +126,10 @@ function App() {
 
   // Initialize dark mode
   useEffect(() => {
-    const isDark = localStorage.getItem('dropshop-dark-mode') === 'true' || 
-      (localStorage.getItem('dropshop-dark-mode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (isDark) {
+    const savedDarkMode = localStorage.getItem('dropshop-dark-mode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedDarkMode === 'true' || (savedDarkMode === null && prefersDark)) {
       document.documentElement.classList.add('dark');
     }
   }, []);
@@ -199,11 +208,11 @@ function App() {
   const recentlyViewed = JSON.parse(localStorage.getItem('dropshop-recent') || '[]');
 
   const categories = [
-    { id: 'all', name: 'Todos' },
-    { id: 'electronica', name: 'Electronica' },
-    { id: 'accesorios', name: 'Accesorios' },
-    { id: 'fitness', name: 'Fitness' },
-    { id: 'hogar', name: 'Hogar' }
+    { id: 'all', name: 'Todos', icon: Gift, color: 'indigo' },
+    { id: 'electronica', name: 'Electrónica', icon: Smartphone, color: 'blue' },
+    { id: 'accesorios', name: 'Accesorios', icon: Wrench, color: 'orange' },
+    { id: 'fitness', name: 'Fitness', icon: Dumbbell, color: 'green' },
+    { id: 'hogar', name: 'Hogar', icon: Home, color: 'purple' }
   ];
 
   // Loading state
@@ -256,32 +265,64 @@ function App() {
         </div>
       </section>
 
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">Explora por Categoria</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 dark:text-white">Explora por Categoría</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.filter(c => c.id !== 'all').map((cat) => (
-              <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className="group p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 border border-gray-200">
-                <h3 className="font-bold text-gray-800 text-center">{cat.name}</h3>
-                <p className="text-sm text-gray-500 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
-              </button>
-            ))}
+            {categories.filter(c => c.id !== 'all').map((cat) => {
+              const colorClasses = {
+                blue: 'from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700',
+                orange: 'from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-700',
+                green: 'from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-700',
+                purple: 'from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-700'
+              };
+              const iconColorClasses = {
+                blue: 'text-blue-600 dark:text-blue-400',
+                orange: 'text-orange-600 dark:text-orange-400',
+                green: 'text-green-600 dark:text-green-400',
+                purple: 'text-purple-600 dark:text-purple-400'
+              };
+              return (
+                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className={`group p-6 bg-gradient-to-br rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 border ${colorClasses[cat.color]}`}>
+                  <div className={`w-14 h-14 mx-auto mb-3 rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm`}>
+                    <cat.icon className={`w-7 h-7 ${iconColorClasses[cat.color]}`} />
+                  </div>
+                  <h3 className="font-bold text-gray-800 dark:text-white text-center">{cat.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-slate-400 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="py-8 bg-white border-b">
+      <section className="py-8 bg-white dark:bg-slate-800 border-b dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { title: 'Pago Seguro', desc: '100% Seguro' },
-              { title: 'Envio Gratis', desc: 'Pedidos +$50' },
-              { title: '30 Dias', desc: 'Devolucion' },
-              { title: 'Soporte 24/7', desc: 'Por WhatsApp' }
+              { icon: ShieldCheck, title: 'Pago Seguro', desc: '100% Seguro', color: 'green' },
+              { icon: Truck, title: 'Envío Gratis', desc: 'Pedidos +$50', color: 'blue' },
+              { icon: RotateCcw, title: '30 Días', desc: 'Devolución', color: 'orange' },
+              { icon: Headphones, title: 'Soporte 24/7', desc: 'Por WhatsApp', color: 'purple' }
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0"><span className="text-xl">✓</span></div>
-                <div><p className="font-bold text-gray-900">{item.title}</p><p className="text-sm text-gray-600">{item.desc}</p></div>
+              <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-700 rounded-xl hover:shadow-md transition-shadow">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  item.color === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
+                  item.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
+                  item.color === 'orange' ? 'bg-orange-100 dark:bg-orange-900/30' :
+                  'bg-purple-100 dark:bg-purple-900/30'
+                }`}>
+                  <item.icon className={`w-6 h-6 ${
+                    item.color === 'green' ? 'text-green-600 dark:text-green-400' :
+                    item.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+                    item.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
+                    'text-purple-600 dark:text-purple-400'
+                  }`} />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900 dark:text-white">{item.title}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">{item.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -459,7 +500,7 @@ function App() {
     <StoreProvider>
       <div className="min-h-screen">
         <Toast />
-        <Header onNavigate={handleNavigate} currentPage={currentPage} />
+        <Header onNavigate={handleNavigate} currentPage={currentPage} onAuthClick={() => setShowAuthModal(true)} />
         {currentPage === 'home' && renderHome()}
         {currentPage === 'shop' && renderShop()}
         {currentPage === 'wishlist' && <Wishlist onNavigate={handleNavigate} />}
@@ -476,12 +517,17 @@ function App() {
         {currentPage === 'product' && <ProductDetail product={selectedProduct} onNavigate={handleNavigate} />}
         {currentPage === '404' && <NotFound onNavigate={handleNavigate} />}
         {currentPage === 'account' && <MyOrders onNavigate={handleNavigate} />}
+        {currentPage === 'user' && <UserAccount onNavigate={handleNavigate} onClose={() => {}} />}
+        {currentPage === 'blog' && <Blog onNavigate={handleNavigate} />}
         <WhatsAppChat />
+        <LiveChat />
         <Analytics />
         <CookiePopup />
+        <MobileNav currentPage={currentPage} onNavigate={handleNavigate} cartCount={cartCount} wishlistCount={wishlist.length} />
         {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
         {showNewsletter && <NewsletterPopup onClose={() => setShowNewsletter(false)} />}
         {showCompare && <CompareModal onClose={() => setShowCompare(false)} onNavigate={handleNavigate} />}
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onLoginSuccess={(user) => console.log('Logged in:', user)} />}
       </div>
     </StoreProvider>
   );

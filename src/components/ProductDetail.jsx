@@ -1,17 +1,51 @@
 import { useState, useEffect } from 'react';
-import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus, ChevronRight, Check } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { fetchProductVariants } from '../lib/supabase';
 import ProductReviews from './ProductReviews';
 
 export default function ProductDetail({ product, onNavigate }) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [variants, setVariants] = useState([]);
+  const [selectedVariants, setSelectedVariants] = useState({});
   const { addToCart, toggleWishlist, isInWishlist } = useStore();
   
+  useEffect(() => {
+    loadVariants();
+  }, [product?.id]);
+
+  async function loadVariants() {
+    if (product?.id) {
+      const data = await fetchProductVariants(product.id);
+      setVariants(data);
+      // Auto-select first variant of each type
+      const defaultSelections = {};
+      data.forEach(v => {
+        if (!defaultSelections[v.type]) {
+          defaultSelections[v.type] = v;
+        }
+      });
+      setSelectedVariants(defaultSelections);
+    }
+  }
+
+  function handleVariantSelect(type, variant) {
+    setSelectedVariants(prev => ({ ...prev, [type]: variant }));
+  }
+
+  function calculatePrice() {
+    let finalPrice = product?.price || 0;
+    Object.values(selectedVariants).forEach(v => {
+      finalPrice += (v.price_modifier || 0);
+    });
+    return finalPrice;
+  }
+
   if (!product) return null;
 
   const inWishlist = isInWishlist(product.id);
-  const price = product?.price || 0;
+  const price = calculatePrice();
   const oldPrice = product?.old_price || product?.oldPrice || 0;
   const discount = oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
   const stockLevel = (product?.reviews || 0) > 1500 ? 'high' : (product?.reviews || 0) > 500 ? 'medium' : 'low';
@@ -137,8 +171,52 @@ export default function ProductDetail({ product, onNavigate }) {
                 </div>
               </div>
 
+              {/* Variants Selection */}
+              {variants.length > 0 && (
+                <div className="mt-4 space-y-4">
+                  {Object.entries(variants.reduce((acc, v) => {
+                    if (!acc[v.type]) acc[v.type] = [];
+                    acc[v.type].push(v);
+                    return acc;
+                  }, {})).map(([type, typeVariants]) => (
+                    <div key={type}>
+                      <span className="font-medium capitalize text-gray-700 dark:text-gray-300 mb-2 block">
+                        {type === 'color' ? 'Color' : type === 'size' ? 'Tamaño' : type === 'storage' ? 'Almacenamiento' : type}:
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {typeVariants.map(variant => (
+                          <button
+                            key={variant.id}
+                            onClick={() => handleVariantSelect(type, variant)}
+                            className={`px-4 py-2 rounded-lg border-2 transition-all flex items-center gap-2 ${
+                              selectedVariants[type]?.id === variant.id
+                                ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                          >
+                            {type === 'color' && (
+                              <span 
+                                className="w-4 h-4 rounded-full border" 
+                                style={{ backgroundColor: variant.name.toLowerCase() }}
+                              />
+                            )}
+                            <span className="text-sm font-medium">{variant.name}</span>
+                            {variant.price_modifier > 0 && (
+                              <span className="text-xs text-green-600">+${variant.price_modifier}</span>
+                            )}
+                            {selectedVariants[type]?.id === variant.id && (
+                              <Check className="w-4 h-4 text-indigo-600" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex gap-3 mb-6">
-                <button onClick={() => addToCart({ ...product, quantity })} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <button onClick={() => addToCart({ ...product, quantity, selectedVariants, finalPrice: calculatePrice() })} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
                   <ShoppingCart className="w-5 h-5" /> Agregar al Carrito
                 </button>
                 <button onClick={() => toggleWishlist(product)} className={`p-3 rounded-xl border-2 transition-all ${inWishlist ? 'border-red-500 bg-red-50 text-red-500' : 'border-gray-300 hover:border-red-500'}`}>
