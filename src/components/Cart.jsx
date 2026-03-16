@@ -1,11 +1,56 @@
-import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight, Home, Store, ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
+import { X, Minus, Plus, Trash2, ShoppingBag, ArrowRight, Home, Store, ArrowLeft, Tag, Check } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
 export default function Cart({ onClose, onNavigate }) {
   const { cart, removeFromCart, updateQuantity, cartTotal } = useStore();
+  
+  // Coupon system
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
 
+  const coupons = {
+    'BIENVENIDO10': { discount: 10, type: 'percent', description: '10% de descuento' },
+    'BIENVENIDO20': { discount: 20, type: 'percent', description: '20% de descuento' },
+    'DROP15': { discount: 15, type: 'percent', description: '15% de descuento' },
+    'VIP25': { discount: 25, type: 'percent', description: '25% de descuento' },
+    'NOEL10': { discount: 10, type: 'fixed', description: '$10 de descuento' },
+  };
+
+  const applyCoupon = () => {
+    const code = couponCode.toUpperCase().trim();
+    if (coupons[code]) {
+      setAppliedCoupon({ code, ...coupons[code] });
+      setCouponError('');
+      setCouponSuccess(`¡Cupón aplicado! ${coupons[code].description}`);
+    } else {
+      setCouponError('Cupón inválido');
+      setAppliedCoupon(null);
+      setCouponSuccess('');
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError('');
+    setCouponSuccess('');
+  };
+
+  // Calculate totals
   const shipping = cartTotal > 50 ? 0 : 5.99;
-  const total = cartTotal + shipping;
+  let discount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.type === 'percent') {
+      discount = cartTotal * (appliedCoupon.discount / 100);
+    } else {
+      discount = appliedCoupon.discount;
+    }
+  }
+  const subtotalAfterDiscount = cartTotal - discount;
+  const total = subtotalAfterDiscount + shipping;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -59,8 +104,54 @@ export default function Cart({ onClose, onNavigate }) {
             {/* Summary */}
             <div className="bg-white rounded-xl shadow-lg p-6 h-fit sticky top-24">
               <h2 className="text-xl font-bold mb-4">Resumen del Pedido</h2>
+              
+              {/* Coupon Input */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">¿Tienes un cupón?</label>
+                {!appliedCoupon ? (
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Código"
+                      className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                    />
+                    <button onClick={applyCoupon} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
+                      Aplicar
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg p-2">
+                    <Tag className="w-4 h-4 text-green-600" />
+                    <span className="flex-1 text-sm text-green-700">{appliedCoupon.code} - {appliedCoupon.description}</span>
+                    <button onClick={removeCoupon} className="text-green-600 hover:text-green-800">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+                {couponSuccess && <p className="text-green-600 text-xs mt-1">{couponSuccess}</p>}
+                
+                {/* Available coupons hint */}
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {Object.keys(coupons).slice(0, 3).map(code => (
+                    <button 
+                      key={code} 
+                      onClick={() => { setCouponCode(code); applyCoupon(); }}
+                      className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200"
+                    >
+                      {code}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-3 border-b pb-4 mb-4">
                 <div className="flex justify-between"><span>Subtotal</span><span>${cartTotal.toFixed(2)}</span></div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600"><span>Descuento</span><span>-${discount.toFixed(2)}</span></div>
+                )}
                 <div className="flex justify-between"><span>Envio</span><span className="text-green-600">{shipping === 0 ? 'Gratis' : `$${shipping.toFixed(2)}`}</span></div>
                 {shipping > 0 && <p className="text-xs text-green-600">Agrega ${(50 - cartTotal).toFixed(2)} para envio gratis</p>}
               </div>
