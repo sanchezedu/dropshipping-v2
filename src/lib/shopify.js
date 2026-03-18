@@ -1,7 +1,8 @@
 // Shopify Integration - Direct Checkout with Variant IDs
 // Uses permalink format: /cart/{variant_id}:{quantity}
+// DOMAIN: kgi4yu-1z.myshopify.com (the working Shopify store)
 
-const SHOPIFY_DOMAIN = 'epicentrodigitalec.shop';
+const SHOPIFY_DOMAIN = 'kgi4yu-1z.myshopify.com';
 const API_URL = 'https://kgi4yu-1z.myshopify.com/api/2024-10/graphql.json';
 const STOREFRONT_TOKEN = 'b84e4f6f0f71ee4670602b2030fd04be';
 
