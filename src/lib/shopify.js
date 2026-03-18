@@ -1,7 +1,5 @@
-// Shopify Integration - Complete Checkout Flow
-// Redirects to Shopify cart with product pre-added
-
-const SHOPIFY_DOMAIN = 'kgi4yu-1z.myshopify.com';
+// Shopify Integration - Using custom domain
+const SHOPIFY_DOMAIN = 'epicentrodigitalec.shop';
 
 // Map of product names to Shopify variant IDs (we need to get these from Shopify)
 // For now, we'll use product handles and let users add to cart on Shopify
