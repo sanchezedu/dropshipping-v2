@@ -1,6 +1,16 @@
-import { Heart, Eye, ShoppingCart, Star, GitCompare, Zap } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Star, GitCompare, Zap, ExternalLink } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { redirectToShopifyCheckout } from '../lib/shopify';
+import { redirectToShopifyCheckout, getShopifyProductUrl } from '../lib/shopify';
+
+// Helper to create handle from product name
+function createHandle(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
 
 export default function ProductCard({ product, onQuickView, onNavigate }) {
   const { addToCart, toggleWishlist, isInWishlist, toggleCompare, isInCompare } = useStore();
@@ -59,23 +69,23 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
           {oldPrice > price && <span className="text-[10px] text-gray-400 line-through">${oldPrice.toFixed(2)}</span>}
         </div>
 
-        {/* Add to cart - always visible */}
+        {/* Buy buttons */}
         <div className="flex gap-1 mt-auto">
           <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform">
             Agregar
           </button>
-          {product?.variantId && (
-            <button 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                redirectToShopifyCheckout(product.variantId, 1); 
-              }} 
-              className="flex-1 bg-[#96bf48] text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform flex items-center justify-center gap-1"
-            >
-              <Zap className="w-3 h-3" />
-              Comprar
-            </button>
-          )}
+          {/* Direct link to Shopify product - opens in new tab */}
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              const handle = product.handle || createHandle(product.name);
+              window.open(getShopifyProductUrl(handle), '_blank');
+            }} 
+            className="flex-1 bg-[#96bf48] text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform flex items-center justify-center gap-1"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Comprar
+          </button>
         </div>
       </div>
     </div>
