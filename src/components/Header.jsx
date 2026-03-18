@@ -15,8 +15,14 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
 
   useEffect(() => {
     checkUser();
-    const isDark = localStorage.getItem('theme') === 'dark';
+    // Check for saved dark mode preference or system preference
+    const savedDarkMode = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedDarkMode === 'dark' || (!savedDarkMode && prefersDark);
     setDarkMode(isDark);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
   }, []);
 
   async function checkUser() {
@@ -127,6 +133,19 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
                 className="p-2 hover:bg-white/10 rounded-lg"
               >
                 <User className="w-5 h-5 text-white" />
+              </button>
+
+              {/* Dark Mode Toggle */}
+              <button 
+                onClick={() => {
+                  const newMode = !darkMode;
+                  setDarkMode(newMode);
+                  localStorage.setItem('theme', newMode ? 'dark' : 'light');
+                  document.documentElement.classList.toggle('dark', newMode);
+                }} 
+                className="p-2 hover:bg-white/10 rounded-lg"
+              >
+                {darkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
               </button>
             </div>
           </div>

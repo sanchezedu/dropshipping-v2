@@ -59,12 +59,12 @@ function NewsletterPopup({ onClose }) {
           </div>
         ) : (
           <>
-            <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4"><Gift className="w-10 h-10 text-white" /></div>
+            <div className="w-20 h-20 bg-[#F97316] rounded-full flex items-center justify-center mx-auto mb-4"><Gift className="w-10 h-10 text-white" /></div>
             <h3 className="text-2xl font-bold mb-2">Recibe 10% de descuento!</h3>
             <p className="text-gray-600 mb-4">Suscribete y obtene un codigo para tu primera compra.</p>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Tu correo electronico" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" required />
-              <button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-bold">Obtener descuento</button>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Tu correo electronico" className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F97316] outline-none" required />
+              <button type="submit" className="w-full bg-[#F97316] text-white py-3 rounded-xl font-bold">Obtener descuento</button>
             </form>
           </>
         )}
@@ -220,7 +220,7 @@ function AppContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-[#F97316] mx-auto mb-4" />
           <p className="text-gray-600">Cargando productos...</p>
         </div>
       </div>
