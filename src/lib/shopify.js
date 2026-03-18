@@ -1,5 +1,5 @@
 // Shopify Integration - Direct Links Method
-const SHOPIFY_DOMAIN = 'kgi4yu-1z.myshopify.com';
+const SHOPIFY_DOMAIN = 'epicentro-digital-ec.myshopify.com';
 
 // Redirect to Shopify product page
 export function redirectToShopifyProduct(handle) {
