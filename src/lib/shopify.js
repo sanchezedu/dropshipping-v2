@@ -1,25 +1,21 @@
 // Shopify Storefront API Client
-// Use environment variables for security
-const SHOPIFY_DOMAIN = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN || 'epicentrodigital-ec.myshopify.com';
-const SHOPIFY_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
+const SHOPIFY_DOMAIN = 'epicentrodigital-ec.myshopify.com';
+const SHOPIFY_STOREFRONT_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 
-// Use latest stable API version
+// Use latest API version
 const STOREFRONT_API_URL = `https://${SHOPIFY_DOMAIN}/api/2024-10/graphql.json`;
 
 async function shopifyFetch(query, variables = {}) {
-  if (!SHOPIFY_TOKEN) {
+  if (!SHOPIFY_STOREFRONT_TOKEN) {
     console.error('⚠️ Shopify token not configured');
-    console.log('VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN:', SHOPIFY_TOKEN ? 'Set' : 'MISSING');
-    return { products: { edges: [] } };
+    return null;
   }
 
-  console.log('🔄 Fetching from Shopify:', SHOPIFY_DOMAIN);
-  
   const response = await fetch(STOREFRONT_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN,
+      'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN,
     },
     body: JSON.stringify({ query, variables }),
   });
@@ -28,14 +24,13 @@ async function shopifyFetch(query, variables = {}) {
   
   if (json.errors) {
     console.error('❌ Shopify API Error:', json.errors);
-    throw new Error(json.errors[0].message);
+    return null;
   }
 
-  console.log('✅ Shopify API connected successfully');
   return json.data;
 }
 
-// Fetch all products
+// Fetch all products with variants
 export async function fetchShopifyProducts(first = 50) {
   const query = `
     query getProducts($first: Int!) {
@@ -77,7 +72,6 @@ export async function fetchShopifyProducts(first = 50) {
                     currencyCode
                   }
                   availableForSale
-                  quantityAvailable
                 }
               }
             }
@@ -90,12 +84,13 @@ export async function fetchShopifyProducts(first = 50) {
   try {
     const data = await shopifyFetch(query, { first });
     
-    if (!data.products) {
+    if (!data?.products) {
       return [];
     }
     
     return data.products.edges.map(({ node }) => ({
       id: parseInt(node.id.split('/').pop()),
+      shopifyId: node.id,
       name: node.title,
       handle: node.handle,
       description: node.description,
@@ -109,7 +104,9 @@ export async function fetchShopifyProducts(first = 50) {
       rating: 4.5,
       reviews: Math.floor(Math.random() * 100),
       inStock: node.variants.edges[0]?.node?.availableForSale || false,
-      featured: node.tags.includes('featured'),
+      // IMPORTANT: Store variant ID for checkout
+      variantId: node.variants.edges[0]?.node?.id || null,
+      variantTitle: node.variants.edges[0]?.node?.title || 'Default',
     }));
   } catch (error) {
     console.error('Error fetching Shopify products:', error);
@@ -117,7 +114,23 @@ export async function fetchShopifyProducts(first = 50) {
   }
 }
 
-// Fetch single product
+// Redirect to Shopify checkout with product
+export function redirectToShopifyCheckout(variantId, quantity = 1) {
+  if (!variantId) {
+    console.error('No variant ID provided');
+    return false;
+  }
+  
+  // Use Shopify permalink checkout
+  // Format: https://store.myshopify.com/cart/variant_id:quantity
+  const checkoutUrl = `https://${SHOPIFY_DOMAIN}/cart/${variantId}:${quantity}`;
+  
+  console.log('Redirecting to Shopify:', checkoutUrl);
+  window.location.href = checkoutUrl;
+  return true;
+}
+
+// Get product by handle with all variants
 export async function fetchShopifyProduct(handle) {
   const query = `
     query getProduct($handle: String!) {
@@ -173,7 +186,7 @@ export async function fetchShopifyProduct(handle) {
   try {
     const data = await shopifyFetch(query, { handle });
     
-    if (!data.productByHandle) {
+    if (!data?.productByHandle) {
       return null;
     }
     
@@ -181,6 +194,7 @@ export async function fetchShopifyProduct(handle) {
     
     return {
       id: parseInt(product.id.split('/').pop()),
+      shopifyId: product.id,
       name: product.title,
       handle: product.handle,
       description: product.description,
@@ -197,6 +211,7 @@ export async function fetchShopifyProduct(handle) {
       inStock: product.variants.edges[0]?.node?.availableForSale || false,
       variants: product.variants.edges.map(v => ({
         id: v.node.id,
+        shopifyVariantId: v.node.id,
         name: v.node.title,
         price: parseFloat(v.node.price.amount),
         inStock: v.node.availableForSale,
@@ -206,52 +221,5 @@ export async function fetchShopifyProduct(handle) {
   } catch (error) {
     console.error('Error fetching Shopify product:', error);
     return null;
-  }
-}
-
-// Create checkout - accepts array of line items
-export async function createCheckout(lineItems) {
-  // Handle both old format (variantId, quantity) and new format (array of objects)
-  let items;
-  if (typeof lineItems === 'string') {
-    items = [{ variantId: lineItems, quantity: 1 }];
-  } else if (Array.isArray(lineItems)) {
-    items = lineItems;
-  } else {
-    throw new Error('Invalid lineItems format');
-  }
-
-  const query = `
-    mutation checkoutCreate($input: CheckoutCreateInput!) {
-      checkoutCreate(input: $input) {
-        checkout {
-          id
-          webUrl
-        }
-        checkoutUserErrors {
-          field
-          message
-        }
-      }
-    }
-  `;
-
-  const variables = {
-    input: {
-      lineItems: items,
-    },
-  };
-
-  try {
-    const data = await shopifyFetch(query, variables);
-    
-    if (data.checkoutCreate.checkoutUserErrors.length > 0) {
-      throw new Error(data.checkoutCreate.checkoutUserErrors[0].message);
-    }
-    
-    return data.checkoutCreate.checkout;
-  } catch (error) {
-    console.error('Error creating checkout:', error);
-    throw error;
   }
 }

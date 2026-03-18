@@ -1,5 +1,6 @@
-import { Heart, Eye, ShoppingCart, Star, GitCompare } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Star, GitCompare, Zap } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { redirectToShopifyCheckout } from '../lib/shopify';
 
 export default function ProductCard({ product, onQuickView, onNavigate }) {
   const { addToCart, toggleWishlist, isInWishlist, toggleCompare, isInCompare } = useStore();
@@ -59,9 +60,23 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
         </div>
 
         {/* Add to cart - always visible */}
-        <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="w-full mt-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform">
-          Agregar al Carrito
-        </button>
+        <div className="flex gap-1 mt-auto">
+          <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform">
+            Agregar
+          </button>
+          {product?.variantId && (
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                redirectToShopifyCheckout(product.variantId, 1); 
+              }} 
+              className="flex-1 bg-[#96bf48] text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform flex items-center justify-center gap-1"
+            >
+              <Zap className="w-3 h-3" />
+              Comprar
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
