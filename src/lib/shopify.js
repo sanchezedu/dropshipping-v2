@@ -1,10 +1,11 @@
-// Shopify Integration - Direct Checkout Links
-// Uses Shopify permalink format
+// Shopify Integration - Redirect to Product Page
+// This is the most reliable method - redirect to Shopify product page
 
 const SHOPIFY_DOMAIN = 'epicentrodigital-ec.myshopify.com';
 
-// Helper to create handle from product name (for fallback)
+// Helper to create handle from product name
 function createHandle(name) {
+  if (!name) return '';
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
@@ -13,47 +14,31 @@ function createHandle(name) {
     .trim();
 }
 
-// Get product page URL
-export function getShopifyProductUrl(handleOrName) {
-  const handle = handleOrName?.handle || createHandle(handleOrName?.name || handleOrName);
+// Get full Shopify product URL
+export function getShopifyProductUrl(product) {
+  // Try to use handle first
+  if (product?.handle) {
+    return `https://${SHOPIFY_DOMAIN}/products/${product.handle}`;
+  }
+  // Fallback to name
+  const handle = createHandle(product?.name || '');
   return `https://${SHOPIFY_DOMAIN}/products/${handle}`;
 }
 
-// Direct checkout URL - tries variant ID first, then product handle
-export function getShopifyCheckoutUrl(product, quantity = 1) {
-  // First try: use variantId if available
-  if (product?.variantId) {
-    const cleanVariantId = product.variantId.replace('gid://shopify/ProductVariant/', '');
-    return `https://${SHOPIFY_DOMAIN}/cart/${cleanVariantId}:${quantity}`;
-  }
-  
-  // Second try: use shopifyId to extract variant
-  if (product?.shopifyId) {
-    return `https://${SHOPIFY_DOMAIN}/cart/${product.shopifyId}:${quantity}`;
-  }
-  
-  // Third try: use handle
-  if (product?.handle) {
-    return `https://${SHOPIFY_DOMAIN}/cart/${product.handle}:${quantity}`;
-  }
-  
-  // Last resort: use product name to create handle
-  const handle = createHandle(product?.name || '');
-  return `https://${SHOPIFY_DOMAIN}/cart/${handle}:${quantity}`;
-}
-
-// Redirect to Shopify checkout
+// Redirect to Shopify product page (most reliable method)
 export function redirectToShopifyCheckout(product, quantity = 1) {
-  const url = getShopifyCheckoutUrl(product, quantity);
-  if (url) {
-    console.log('Redirecting to checkout:', url);
-    window.location.href = url;
-    return true;
-  }
-  return false;
+  const url = getShopifyProductUrl(product);
+  console.log('Redirecting to Shopify product:', url);
+  window.location.href = url;
+  return true;
 }
 
-// Placeholder functions
+// Legacy function for compatibility
+export function getShopifyCheckoutUrl(product, quantity = 1) {
+  return getShopifyProductUrl(product);
+}
+
+// Placeholder
 export async function fetchShopifyProducts(first = 50) {
   return [];
 }
