@@ -3,14 +3,18 @@
 const SHOPIFY_DOMAIN = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN || 'epicentrodigital-ec.myshopify.com';
 const SHOPIFY_TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 
-const STOREFRONT_API_URL = `https://${SHOPIFY_DOMAIN}/api/2024-01/graphql.json`;
+// Use latest stable API version
+const STOREFRONT_API_URL = `https://${SHOPIFY_DOMAIN}/api/2024-10/graphql.json`;
 
 async function shopifyFetch(query, variables = {}) {
   if (!SHOPIFY_TOKEN) {
-    console.error('Shopify token not configured. Set VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN in .env');
+    console.error('⚠️ Shopify token not configured');
+    console.log('VITE_SHOPIFY_STOREFRONT_ACCESS_TOKEN:', SHOPIFY_TOKEN ? 'Set' : 'MISSING');
     return { products: { edges: [] } };
   }
 
+  console.log('🔄 Fetching from Shopify:', SHOPIFY_DOMAIN);
+  
   const response = await fetch(STOREFRONT_API_URL, {
     method: 'POST',
     headers: {
@@ -23,10 +27,11 @@ async function shopifyFetch(query, variables = {}) {
   const json = await response.json();
   
   if (json.errors) {
-    console.error('Shopify API Error:', json.errors);
+    console.error('❌ Shopify API Error:', json.errors);
     throw new Error(json.errors[0].message);
   }
 
+  console.log('✅ Shopify API connected successfully');
   return json.data;
 }
 
