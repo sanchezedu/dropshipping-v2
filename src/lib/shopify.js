@@ -1,7 +1,5 @@
-// Shopify Integration - Redirect to Product Page
-// This is the most reliable method - redirect to Shopify product page
-
-const SHOPIFY_DOMAIN = 'epicentrodigital-ec.myshopify.com';
+// Shopify Integration - Using working domain
+const SHOPIFY_DOMAIN = 'kgi4yu-1z.myshopify.com';
 
 // Helper to create handle from product name
 function createHandle(name) {
