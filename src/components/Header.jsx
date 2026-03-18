@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Menu, X, User, Sun, Moon, ShoppingBag } from 'lucide-react';
+import { Search, Menu, X, User, ShoppingBag, Heart, Sun, Moon } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { products as localProducts } from '../data/products';
 import { getCurrentUser } from '../lib/supabase';
@@ -11,7 +11,7 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
-  const { wishlist, cartCount, showToast } = useStore();
+  const { wishlist, cartCount } = useStore();
 
   useEffect(() => {
     checkUser();
@@ -39,152 +39,166 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
     p.name?.toLowerCase().includes(searchQuery.toLowerCase())
   ).slice(0, 5);
 
+  const navLinks = [
+    { id: 'home', label: 'Inicio' },
+    { id: 'shop', label: 'Productos' },
+    { id: 'blog', label: 'Ofertas' },
+    { id: 'about', label: 'Sobre Nosotros' },
+    { id: 'contact', label: 'Contacto' },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3">
-        {/* Main Header Row */}
-        <div className="flex items-center justify-between h-12">
-          {/* Mobile Menu Button */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="lg:hidden p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg touch-manipulation"
-          >
-            <Menu className="w-6 h-6 dark:text-white" />
-          </button>
-
-          {/* Logo */}
-          <button onClick={() => onNavigate('home')} className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">E</span>
-            </div>
-            <span className="text-lg font-bold text-gray-800 dark:text-white hidden sm:block">Epicentro Digital Ec</span>
-          </button>
-
-          {/* Right Side - Always visible icons */}
-          <div className="flex items-center gap-1">
-            {/* Search Button */}
-            <button 
-              onClick={() => setSearchOpen(!searchOpen)} 
-              className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg touch-manipulation"
-            >
-              <Search className="w-5 h-5 dark:text-white" />
-            </button>
-
-            {/* User Button */}
-            <button 
-              onClick={() => onAuthClick && onAuthClick()} 
-              className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg touch-manipulation"
-            >
-              <User className="w-5 h-5 dark:text-white" />
-            </button>
-          </div>
-        </div>
-
-        {/* Search Bar - Expandable */}
-        {searchOpen && (
-          <div className="pb-3">
-            <div className="relative">
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => { 
-                  setSearchQuery(e.target.value); 
-                  setShowSuggestions(e.target.value.length > 0); 
-                }}
-                onFocus={() => setShowSuggestions(searchQuery.length > 0)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                placeholder="Buscar productos..."
-                autoFocus
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-base bg-gray-50 dark:bg-slate-800 dark:text-white"
-              />
-              <button 
-                onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full mt-1 w-full bg-white dark:bg-slate-800 rounded-xl shadow-lg border dark:border-slate-700 z-50">
-                  {suggestions.map(product => (
-                    <button 
-                      key={product.id} 
-                      onClick={() => { 
-                        onNavigate('product', product); 
-                        setShowSuggestions(false); 
-                        setSearchQuery(''); 
-                        setSearchOpen(false); 
-                      }} 
-                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-slate-700 text-left"
-                    >
-                      <img src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{product.name}</p>
-                        <p className="text-sm text-indigo-600 font-bold">${product.price.toFixed(2)}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+    <header className="sticky top-0 z-50">
+      {/* Top Banner */}
+      <div className="bg-[#F97316] text-white text-sm py-2 text-center font-medium">
+        ENVÍO gratis a todo Ecuador en pedidos mayores a $50 | Pago contra entrega disponible
       </div>
 
-      {/* Mobile Menu - Full Screen Overlay */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-12 z-40 bg-white dark:bg-slate-900 overflow-y-auto">
-          <nav className="p-4 space-y-2">
-            {/* User Info */}
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl mb-4">
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-800 dark:text-white">
-                  {user ? user.email : 'Invitado'}
-                </p>
-                <button 
-                  onClick={() => { onAuthClick && onAuthClick(); setMobileMenuOpen(false); }}
-                  className="text-sm text-indigo-600 font-medium"
-                >
-                  {user ? 'Mi Cuenta' : 'Iniciar Sesión'}
-                </button>
-              </div>
-            </div>
+      {/* Main Header */}
+      <div className="bg-[#0A192F] py-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between">
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="lg:hidden p-2 hover:bg-white/10 rounded-lg"
+            >
+              <Menu className="w-6 h-6 text-white" />
+            </button>
 
-            {/* Menu Items - Icons only, no duplicate text */}
-            {[
-              { id: 'home', label: '🏠 Inicio' },
-              { id: 'shop', label: '🛍️ Tienda' },
-              { id: 'blog', label: '📰 Blog' },
-              { id: 'wishlist', label: '❤️ Favoritos', count: wishlist.length },
-              { id: 'cart', label: '🛒 Carrito', count: cartCount },
-            ].map(item => (
+            {/* Logo */}
+            <button onClick={() => onNavigate('home')} className="flex flex-col">
+              <span className="text-white font-['Space_Grotesk'] font-bold text-2xl">EPICENTRO</span>
+              <span className="text-cyan-400 text-sm tracking-widest block">DIGITAL EC</span>
+            </button>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-8">
+              {navLinks.map(link => (
+                <button 
+                  key={link.id}
+                  onClick={() => onNavigate(link.id)}
+                  className="text-slate-200 hover:text-white transition-colors font-medium"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Right Icons */}
+            <div className="flex items-center gap-2">
+              {/* Search */}
               <button 
-                key={item.id} 
-                onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }} 
-                className={`flex items-center justify-between w-full text-left p-4 rounded-xl font-medium ${
-                  currentPage === item.id 
-                    ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600' 
-                    : 'text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
-                }`}
+                onClick={() => setSearchOpen(!searchOpen)} 
+                className="p-2 hover:bg-white/10 rounded-lg"
               >
-                <span>{item.label}</span>
-                {item.count > 0 && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                    {item.count}
+                <Search className="w-5 h-5 text-white" />
+              </button>
+
+              {/* Wishlist */}
+              <button 
+                onClick={() => onNavigate('wishlist')} 
+                className="p-2 hover:bg-white/10 rounded-lg relative"
+              >
+                <Heart className="w-5 h-5 text-white" />
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#F97316] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                    {wishlist.length}
                   </span>
                 )}
               </button>
-            ))}
 
-            {/* Dark Mode Toggle */}
-            <button 
-              onClick={toggleDarkMode} 
-              className="flex items-center justify-between w-full text-left p-4 rounded-xl text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800"
-            >
-              <span>{darkMode ? '☀️ Modo Claro' : '🌙 Modo Oscuro'}</span>
-            </button>
+              {/* Cart */}
+              <button 
+                onClick={() => onNavigate('cart')} 
+                className="p-2 hover:bg-white/10 rounded-lg relative"
+              >
+                <ShoppingBag className="w-5 h-5 text-white" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#F97316] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+
+              {/* User */}
+              <button 
+                onClick={() => onAuthClick && onAuthClick()} 
+                className="p-2 hover:bg-white/10 rounded-lg"
+              >
+                <User className="w-5 h-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          {searchOpen && (
+            <div className="mt-4">
+              <div className="relative max-w-xl mx-auto">
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => { 
+                    setSearchQuery(e.target.value); 
+                    setShowSuggestions(e.target.value.length > 0); 
+                  }}
+                  onFocus={() => setShowSuggestions(searchQuery.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  placeholder="Buscar productos..."
+                  autoFocus
+                  className="w-full px-4 py-3 border border-white/20 rounded-full bg-white/10 text-white placeholder-white/60 focus:outline-none focus:border-[#F97316]"
+                />
+                <button 
+                  onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="w-5 h-5 text-white/60" />
+                </button>
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-xl z-50">
+                    {suggestions.map(product => (
+                      <button 
+                        key={product.id} 
+                        onClick={() => { 
+                          onNavigate('product', product); 
+                          setShowSuggestions(false); 
+                          setSearchQuery(''); 
+                          setSearchOpen(false); 
+                        }} 
+                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 text-left"
+                      >
+                        <img src={product.image} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
+                          <p className="text-sm text-[#F97316] font-bold">${product.price.toFixed(2)}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 top-[108px] z-40 bg-[#0A192F] overflow-y-auto">
+          <nav className="p-4 space-y-2">
+            {navLinks.map(link => (
+              <button 
+                key={link.id}
+                onClick={() => { onNavigate(link.id); setMobileMenuOpen(false); }} 
+                className={`flex items-center justify-between w-full text-left p-4 rounded-xl font-medium ${
+                  currentPage === link.id 
+                    ? 'bg-[#F97316] text-white' 
+                    : 'text-slate-200 hover:bg-white/10'
+                }`}
+              >
+                <span>{link.label}</span>
+              </button>
+            ))}
           </nav>
         </div>
       )}
