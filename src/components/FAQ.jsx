@@ -12,7 +12,7 @@ export default function FAQ({ onNavigate }) {
     { q: '¿Cómo puedo rastrear mi pedido?', a: 'Una vez enviado tu pedido, recibirás un número de seguimiento por email. También puedes contactarnos para conocer el estado.' },
     { q: '¿Los productos tienen garantía?', a: 'Sí, todos nuestros productos cuentan con garantía del fabricante. La garantía varía por producto (consulta las especificaciones).' },
     { q: '¿Puedo comprar por WhatsApp?', a: 'Sí! Puedes escribirnos al +593 99 123 4567 para hacer tu pedido directamente.' },
-    { q: '¿Cómo contacto al servicio al cliente?', a: 'Puedes contactarnos por: Email: info@dropshop.ec, WhatsApp: +593 99 123 4567, o através del formulario de contacto.' }
+    { q: '¿Cómo contacto al servicio al cliente?', a: 'Puedes contactarnos por: Email: info@epicentrodigitalec.shop, WhatsApp: +593 99 123 4567, o através del formulario de contacto.' }
   ];
 
   const [openIndex, setOpenIndex] = useState(null);
