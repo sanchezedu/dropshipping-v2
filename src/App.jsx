@@ -30,6 +30,7 @@ import AuthModal from './components/AuthModal';
 import MobileNav from './components/MobileNav';
 import { products as localProducts } from './data/products';
 import { fetchProducts, fetchProduct } from './lib/supabase';
+import { fetchShopifyProducts } from './lib/shopify';
 import { X, Mail, Gift, ChevronRight, GitCompare, Info, Loader2, ShieldCheck, Truck, RotateCcw, Headphones, Smartphone, Wrench, Dumbbell, Home } from 'lucide-react';
 
 function NewsletterPopup({ onClose }) {
@@ -104,20 +105,35 @@ function AppContent() {
   }, []);
 
   // Load products from Supabase
+// Load products from Shopify (with fallbacks)
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
       try {
-        const data = await fetchProducts();
-        if (data && Array.isArray(data) && data.length > 0) {
-          setProducts(data);
+        // Try Shopify first
+        const shopifyProducts = await fetchShopifyProducts(50);
+        if (shopifyProducts && shopifyProducts.length > 0) {
+          setProducts(shopifyProducts);
         } else {
-          console.log('No products from Supabase, using local fallback');
-          setProducts(localProducts);
+          // Fallback to Supabase
+          const data = await fetchProducts();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setProducts(data);
+          } else {
+            setProducts(localProducts);
+          }
         }
       } catch (error) {
-        console.log('Supabase error, using local products:', error.message);
-        setProducts(localProducts);
+        try {
+          const data = await fetchProducts();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setProducts(data);
+          } else {
+            setProducts(localProducts);
+          }
+        } catch (e) {
+          setProducts(localProducts);
+        }
       }
       setLoading(false);
     }
