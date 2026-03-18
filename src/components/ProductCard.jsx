@@ -1,6 +1,6 @@
 import { Heart, Eye, ShoppingCart, Star, GitCompare, Zap, ExternalLink } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import { redirectToShopifyCheckout, getShopifyProductUrl } from '../lib/shopify';
+import { redirectToShopifyCheckout, initVariantCache } from '../lib/shopify';
 
 // Helper to create handle from product name
 function createHandle(name) {
@@ -11,6 +11,9 @@ function createHandle(name) {
     .replace(/-+/g, '-')
     .trim();
 }
+
+// Initialize Shopify variant cache on first load
+initVariantCache().catch(console.error);
 
 export default function ProductCard({ product, onQuickView, onNavigate }) {
   const { addToCart, toggleWishlist, isInWishlist, toggleCompare, isInCompare } = useStore();
