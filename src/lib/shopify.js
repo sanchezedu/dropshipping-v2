@@ -209,8 +209,18 @@ export async function fetchShopifyProduct(handle) {
   }
 }
 
-// Create checkout
-export async function createCheckout(variantId, quantity = 1) {
+// Create checkout - accepts array of line items
+export async function createCheckout(lineItems) {
+  // Handle both old format (variantId, quantity) and new format (array of objects)
+  let items;
+  if (typeof lineItems === 'string') {
+    items = [{ variantId: lineItems, quantity: 1 }];
+  } else if (Array.isArray(lineItems)) {
+    items = lineItems;
+  } else {
+    throw new Error('Invalid lineItems format');
+  }
+
   const query = `
     mutation checkoutCreate($input: CheckoutCreateInput!) {
       checkoutCreate(input: $input) {
@@ -228,7 +238,7 @@ export async function createCheckout(variantId, quantity = 1) {
 
   const variables = {
     input: {
-      lineItems: [{ variantId, quantity }],
+      lineItems: items,
     },
   };
 

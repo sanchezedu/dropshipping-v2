@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
-import { CreditCard, Lock, Check, Truck, Shield } from 'lucide-react';
+import { CreditCard, Lock, Check, Truck, Shield, ExternalLink } from 'lucide-react';
 import { createOrder, createOrderItems, getCurrentUser } from '../lib/supabase';
+import { createCheckout } from '../lib/shopify';
 import PayPhonePayment from './PayPhonePayment';
 
 export default function Checkout({ onNavigate }) {
@@ -244,6 +245,40 @@ export default function Checkout({ onNavigate }) {
                 <div className="flex justify-between"><span>Subtotal</span><span>${cartTotal.toFixed(2)}</span></div>
                 <div className="flex justify-between"><span>Envio</span><span className="text-green-600">{shipping === 0 ? 'Gratis' : `$${shipping.toFixed(2)}`}</span></div>
                 <div className="flex justify-between text-lg font-bold pt-2 border-t"><span>Total</span><span className="text-indigo-600">${total.toFixed(2)}</span></div>
+              </div>
+
+              {/* Shopify Checkout Button */}
+              <div className="mt-6 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const lineItems = cart.map(item => ({
+                        variantId: item.variants?.[0]?.id || `gid://shopify/ProductVariant/${item.id}`,
+                        quantity: item.quantity
+                      }));
+                      
+                      const checkout = await createCheckout(lineItems);
+                      if (checkout?.webUrl) {
+                        window.location.href = checkout.webUrl;
+                      } else {
+                        showToast('Error al crear checkout. Intenta de nuevo.', 'error');
+                      }
+                    } catch (error) {
+                      console.error('Shopify checkout error:', error);
+                      showToast('Error al conectar con Shopify. Usa el formulario.', 'error');
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                  className="w-full bg-[#96bf48] text-white py-4 rounded-lg font-bold hover:bg-[#7da33c] disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  {loading ? 'Conectando...' : 'Pagar en Shopify'}
+                </button>
+                <p className="text-xs text-center text-gray-500 mt-2">Seras redirigido a Shopify para completar tu pago</p>
               </div>
             </div>
           </div>
