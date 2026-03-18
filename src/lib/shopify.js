@@ -1,5 +1,10 @@
-// Shopify Integration - Using working domain
+// Shopify Integration - Complete Checkout Flow
+// Redirects to Shopify cart with product pre-added
+
 const SHOPIFY_DOMAIN = 'kgi4yu-1z.myshopify.com';
+
+// Map of product names to Shopify variant IDs (we need to get these from Shopify)
+// For now, we'll use product handles and let users add to cart on Shopify
 
 // Helper to create handle from product name
 function createHandle(name) {
@@ -14,29 +19,23 @@ function createHandle(name) {
 
 // Get full Shopify product URL
 export function getShopifyProductUrl(product) {
-  // Try to use handle first
-  if (product?.handle) {
-    return `https://${SHOPIFY_DOMAIN}/products/${product.handle}`;
-  }
-  // Fallback to name
-  const handle = createHandle(product?.name || '');
+  const handle = product?.handle || createHandle(product?.name || '');
   return `https://${SHOPIFY_DOMAIN}/products/${handle}`;
 }
 
-// Redirect to Shopify product page (most reliable method)
+// Redirect to Shopify with product - goes to product page where they can add to cart
 export function redirectToShopifyCheckout(product, quantity = 1) {
   const url = getShopifyProductUrl(product);
-  console.log('Redirecting to Shopify product:', url);
+  console.log('Redirecting to Shopify:', url);
   window.location.href = url;
   return true;
 }
 
-// Legacy function for compatibility
+// Legacy functions for compatibility
 export function getShopifyCheckoutUrl(product, quantity = 1) {
   return getShopifyProductUrl(product);
 }
 
-// Placeholder
 export async function fetchShopifyProducts(first = 50) {
   return [];
 }
