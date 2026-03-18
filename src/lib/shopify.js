@@ -1,41 +1,60 @@
-// Shopify Integration - Direct Links Method
-const SHOPIFY_DOMAIN = 'epicentro-digital-ec.myshopify.com';
+// Shopify Integration - Direct Checkout Links
+// Uses Shopify permalink format
 
-// Redirect to Shopify product page
-export function redirectToShopifyProduct(handle) {
-  const url = `https://${SHOPIFY_DOMAIN}/products/${handle}`;
-  console.log('Redirecting to:', url);
-  window.location.href = url;
+const SHOPIFY_DOMAIN = 'epicentrodigital-ec.myshopify.com';
+
+// Helper to create handle from product name (for fallback)
+function createHandle(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
 }
 
-// Redirect to Shopify cart/checkout with variant
-export function redirectToShopifyCheckout(variantId, quantity = 1) {
-  if (!variantId) {
-    console.error('No variant ID');
-    return false;
-  }
-  // Use the permalink format: /cart/variant_id:quantity
-  const url = `https://${SHOPIFY_DOMAIN}/cart/${variantId}:${quantity}`;
-  console.log('Redirecting to checkout:', url);
-  window.location.href = url;
-  return true;
-}
-
-// For now, we'll use direct product links since API is failing
-export function getShopifyProductUrl(handle) {
+// Get product page URL
+export function getShopifyProductUrl(handleOrName) {
+  const handle = handleOrName?.handle || createHandle(handleOrName?.name || handleOrName);
   return `https://${SHOPIFY_DOMAIN}/products/${handle}`;
 }
 
-export function getShopifyCheckoutUrl(variantId, quantity = 1) {
-  if (!variantId) return null;
-  return `https://${SHOPIFY_DOMAIN}/cart/${variantId}:${quantity}`;
+// Direct checkout URL - tries variant ID first, then product handle
+export function getShopifyCheckoutUrl(product, quantity = 1) {
+  // First try: use variantId if available
+  if (product?.variantId) {
+    const cleanVariantId = product.variantId.replace('gid://shopify/ProductVariant/', '');
+    return `https://${SHOPIFY_DOMAIN}/cart/${cleanVariantId}:${quantity}`;
+  }
+  
+  // Second try: use shopifyId to extract variant
+  if (product?.shopifyId) {
+    return `https://${SHOPIFY_DOMAIN}/cart/${product.shopifyId}:${quantity}`;
+  }
+  
+  // Third try: use handle
+  if (product?.handle) {
+    return `https://${SHOPIFY_DOMAIN}/cart/${product.handle}:${quantity}`;
+  }
+  
+  // Last resort: use product name to create handle
+  const handle = createHandle(product?.name || '');
+  return `https://${SHOPIFY_DOMAIN}/cart/${handle}:${quantity}`;
 }
 
-// These are placeholder functions - API integration would need proper token
+// Redirect to Shopify checkout
+export function redirectToShopifyCheckout(product, quantity = 1) {
+  const url = getShopifyCheckoutUrl(product, quantity);
+  if (url) {
+    console.log('Redirecting to checkout:', url);
+    window.location.href = url;
+    return true;
+  }
+  return false;
+}
+
+// Placeholder functions
 export async function fetchShopifyProducts(first = 50) {
-  // Return empty array - we're using fallback to local/Supabase products
-  // But adding product URLs for buy buttons
-  console.log('Shopify API: Using fallback products (API token issue)');
   return [];
 }
 

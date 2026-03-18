@@ -74,16 +74,15 @@ export default function ProductCard({ product, onQuickView, onNavigate }) {
           <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform">
             Agregar
           </button>
-          {/* Direct link to Shopify product - opens in new tab */}
+          {/* Direct checkout - goes to Shopify cart with product */}
           <button 
             onClick={(e) => { 
               e.stopPropagation(); 
-              const handle = product.handle || createHandle(product.name);
-              window.open(getShopifyProductUrl(handle), '_blank');
+              redirectToShopifyCheckout(product, 1);
             }} 
             className="flex-1 bg-[#96bf48] text-white text-xs font-semibold py-2 rounded-lg touch-manipulation active:scale-95 transition-transform flex items-center justify-center gap-1"
           >
-            <ExternalLink className="w-3 h-3" />
+            <Zap className="w-3 h-3" />
             Comprar
           </button>
         </div>
