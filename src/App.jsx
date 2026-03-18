@@ -230,20 +230,42 @@ function AppContent() {
   // Render Home
   const renderHome = () => (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-2 px-4">
-        <p className="text-xs md:text-sm font-semibold">ENVIO GRÁTIS a todo Ecuador en pedidos mayores a $50 | Pago contra entrega disponible</p>
+      <div className="bg-[#F97316] text-white text-center py-2 px-4">
+        <p className="text-xs md:text-sm font-semibold">ENVÍO gratis a todo Ecuador en pedidos mayores a $50 | Pago contra entrega disponible</p>
       </div>
 
-      {/* Hero Section - Mobile Optimized */}
-      <section className="relative h-[320px] md:h-[500px] lg:h-[600px] overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600" alt="Tienda" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-3 md:px-4 w-full">
-            <div className="max-w-xs md:max-w-xl">
-              <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold text-white mb-2 md:mb-4 leading-tight">Los Mejores Productos<span className="block text-orange-400">Al Mejor Precio</span></h1>
-              <p className="text-base md:text-xl text-white/90 mb-4 md:mb-8">Envio gratis a todo Ecuador. Calidad garantizada.</p>
-              <button onClick={() => handleNavigate('shop')} className="bg-orange-500 hover:bg-orange-600 text-sm md:text-lg px-6 md:px-10 py-3 md:py-4 rounded-full font-bold w-full md:w-auto">Ver Ofertas de Hoy</button>
+      {/* Hero Section - New Design */}
+      <section className="bg-slate-50 min-h-[500px] flex items-center relative overflow-hidden pb-20">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Left Column - Text */}
+            <div className="order-2 md:order-1">
+              <h1 className="text-5xl md:text-6xl font-['Space_Grotesk'] font-extrabold text-slate-900 leading-tight mb-4">
+                Lo Último en Tecnología
+              </h1>
+              <p className="text-lg text-slate-600 mb-8">
+                Llegó a Ecuador. Explora nuestra selección premium.
+              </p>
+              <button 
+                onClick={() => handleNavigate('shop')} 
+                className="bg-[#F97316] hover:bg-orange-600 text-white font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all w-fit"
+              >
+                Ver Productos Nuevos
+              </button>
+            </div>
+            
+            {/* Right Column - Images */}
+            <div className="order-1 md:order-2 flex gap-4 justify-center">
+              <img 
+                src="https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?auto=format&fit=crop&w=500&q=80" 
+                alt="Dron" 
+                className="rounded-2xl shadow-2xl object-cover w-48 h-64 md:w-56 md:h-72"
+              />
+              <img 
+                src="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=500&q=80" 
+                alt="Auriculares" 
+                className="rounded-2xl shadow-2xl object-cover w-48 h-64 md:w-56 md:h-72 mt-8"
+              />
             </div>
           </div>
         </div>
@@ -254,41 +276,41 @@ function AppContent() {
         <GitCompare className="w-4 h-4" /> <span className="text-sm">Comparar</span>
       </button>
 
-      {/* Flash Sale Banner with Countdown */}
-      <section className="bg-gradient-to-r from-red-600 to-orange-500 py-3 md:py-6">
+      {/* Flash Sale Banner with Countdown - New Design */}
+      <section className="bg-[#0A192F] py-3 md:py-6">
         <div className="max-w-7xl mx-auto px-3 md:px-4 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
           <div className="text-white text-center md:text-left">
-            <h3 className="text-lg md:text-2xl font-bold">🔥 OFERTA FLASH</h3>
+            <h3 className="text-lg md:text-2xl font-bold text-[#F97316]">🔥 OFERTAS FLASH</h3>
             <p className="text-xs md:text-white/90">20% de descuento en electrónicos hasta:</p>
           </div>
           <CountdownTimer targetDate={new Date().getTime() + 3 * 24 * 60 * 60 * 1000} />
         </div>
       </section>
 
-      <section className="py-6 md:py-12 bg-white dark:bg-slate-800">
+      <section className="py-6 md:py-12 bg-slate-50">
         <div className="max-w-7xl mx-auto px-3 md:px-4">
-          <h2 className="text-lg md:text-2xl font-bold text-center mb-4 md:mb-8 dark:text-white">Explora por Categoría</h2>
+          <h2 className="text-lg md:text-2xl font-bold text-center mb-4 md:mb-8 text-slate-900">Explora por Categoría</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {categories.filter(c => c.id !== 'all').map((cat) => {
               const colorClasses = {
-                blue: 'from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700',
-                orange: 'from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-700',
-                green: 'from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-700',
-                purple: 'from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-700'
+                blue: 'from-blue-50 to-blue-100 border-blue-200',
+                orange: 'from-orange-50 to-orange-100 border-orange-200',
+                green: 'from-green-50 to-green-100 border-green-200',
+                purple: 'from-purple-50 to-purple-100 border-purple-200'
               };
               const iconColorClasses = {
-                blue: 'text-blue-600 dark:text-blue-400',
-                orange: 'text-orange-600 dark:text-orange-400',
-                green: 'text-green-600 dark:text-green-400',
-                purple: 'text-purple-600 dark:text-purple-400'
+                blue: 'text-blue-600',
+                orange: 'text-orange-600',
+                green: 'text-green-600',
+                purple: 'text-purple-600'
               };
               return (
-                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className={`group p-3 md:p-6 bg-gradient-to-br rounded-xl md:rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1 border ${colorClasses[cat.color]}`}>
-                  <div className={`w-10 h-10 md:w-14 md:h-14 mx-auto mb-2 md:mb-3 rounded-lg md:rounded-xl bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm`}>
+                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); handleNavigate('shop'); }} className={`group p-3 md:p-6 bg-gradient-to-br rounded-xl hover:shadow-xl transition-all hover:-translate-y-1 border ${colorClasses[cat.color]}`}>
+                  <div className={`w-10 h-10 md:w-14 md:h-14 mx-auto mb-2 md:mb-3 rounded-lg bg-white flex items-center justify-center shadow-sm`}>
                     <cat.icon className={`w-5 h-5 md:w-7 md:h-7 ${iconColorClasses[cat.color]}`} />
                   </div>
-                  <h3 className="font-bold text-sm md:text-base text-gray-800 dark:text-white text-center">{cat.name}</h3>
-                  <p className="text-xs md:text-sm text-gray-500 dark:text-slate-400 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
+                  <h3 className="font-bold text-sm md:text-base text-gray-800 text-center">{cat.name}</h3>
+                  <p className="text-xs md:text-sm text-gray-500 text-center">{products.filter(p => p.category === cat.id).length} productos</p>
                 </button>
               );
             })}
