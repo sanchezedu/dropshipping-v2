@@ -35,7 +35,7 @@ export default function Contact({ onNavigate }) {
                 </div>
                 <div>
                   <h3 className="font-bold">Email</h3>
-                  <p className="text-gray-600">info@dropshop.ec</p>
+                  <p className="text-gray-600">info@epicentrodigitalec.shop</p>
                 </div>
               </div>
 

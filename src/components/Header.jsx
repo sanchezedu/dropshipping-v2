@@ -55,9 +55,9 @@ export default function Header({ onNavigate, currentPage, onAuthClick }) {
           {/* Logo */}
           <button onClick={() => onNavigate('home')} className="flex items-center gap-2">
             <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">D</span>
+              <span className="text-white font-bold text-lg">E</span>
             </div>
-            <span className="text-lg font-bold text-gray-800 dark:text-white hidden sm:block">DropShop</span>
+            <span className="text-lg font-bold text-gray-800 dark:text-white hidden sm:block">Epicentro Digital Ec</span>
           </button>
 
           {/* Right Side - Always visible icons */}

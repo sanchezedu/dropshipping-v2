@@ -6,7 +6,7 @@ export default function About({ onNavigate }) {
       <div className="max-w-7xl mx-auto px-4">
         {/* Hero */}
         <section className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Sobre DropShop Ecuador</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Sobre Epicentro Digital Ec</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Tu tienda de confianza para los mejores productos con envío a todo Ecuador
           </p>
@@ -18,7 +18,7 @@ export default function About({ onNavigate }) {
             <div>
               <h2 className="text-3xl font-bold mb-4">Nuestra Misión</h2>
               <p className="text-gray-600 mb-4">
-                En DropShop Ecuador nuestra misión es ofrecer productos de alta calidad a los mejores precios, 
+                En Epicentro Digital Ec nuestra misión es ofrecer productos de alta calidad a los mejores precios, 
                 con un servicio al cliente excepcional y envíos rápidos a todo el país.
               </p>
               <p className="text-gray-600">
